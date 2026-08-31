@@ -563,8 +563,10 @@
   phoneBody.style.backgroundImage = "url('телефон/телефон.png')";
   
   // Применяем начальные размеры через CSS-переменные (не прямые стили!)
-  phoneBody.style.setProperty('--phone-width', '280px');
-  phoneBody.style.setProperty('--phone-height', '520px');
+  phoneBody.style.setProperty('--phone-x', '-48px');
+  phoneBody.style.setProperty('--phone-y', '1px');
+  phoneBody.style.setProperty('--phone-width', '397px');
+  phoneBody.style.setProperty('--phone-height', '737px');
 
   // =================================================================
   // НАСТРОЙКИ ЭКРАНА И КОНТЕНТА
@@ -1008,7 +1010,7 @@
 
   // Определение всех элементов для настройки
   const elementsConfig = {
-    'phoneBody': { name: 'Корпус телефона', el: '#phoneBody', defaults: { x: 0, y: 0, width: 280 }, varPrefix: '--phone', isPhone: true },
+    'phoneBody': { name: 'Корпус телефона', el: '#phoneBody', defaults: { x: -48, y: 1, width: 397 }, varPrefix: '--phone', isPhone: true },
     'btn-up': { name: '🔼 Кнопка Вверх', el: '.btn-up', defaults: { x: 120, y: 210, width: 50 }, varPrefix: '--btn' },
     'btn-down': { name: '🔽 Кнопка Вниз', el: '.btn-down', defaults: { x: 120, y: 310, width: 50 }, varPrefix: '--btn' },
     'btn-left': { name: '◀ Кнопка Влево', el: '.btn-left', defaults: { x: 35, y: 260, width: 50 }, varPrefix: '--btn' },
