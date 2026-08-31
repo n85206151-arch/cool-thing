@@ -177,6 +177,17 @@
             background-image: url('телефон/центр.png');
         }
 
+        /* Холст для брелока с цепочкой, привязанного к правому краю телефона */
+        .keychain-canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 700px;
+            height: 900px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
@@ -189,6 +200,9 @@
         <div class="phone-body" id="phoneBody"></div>
 
         <div class="phone-body" id="phoneBody"></div>
+
+        <!-- Брелок с цепочкой, прикреплённый к правому краю телефона -->
+        <canvas class="keychain-canvas" id="keychainCanvas"></canvas>
 
         <!-- Навигационные кнопки -->
         <div class="phone-button btn-up" id="btnNavUp"></div>
@@ -641,6 +655,197 @@
   });
   
   render();
+</script>
+
+<script>
+  // =================================================================
+  // БРЕЛОК НА ЦЕПОЧКЕ (физика на верлет-интеграции)
+  // Временные заглушки для сегментов цепочки и самого брелока: центр.png
+  // =================================================================
+  (function () {
+    const kcCanvas = document.getElementById('keychainCanvas');
+    const kctx = kcCanvas.getContext('2d');
+
+    // Внутреннее разрешение холста совпадает с его CSS-размером
+    kcCanvas.width = 700;
+    kcCanvas.height = 900;
+
+    // =================================================================
+    // НАСТРОЙКИ ВНЕШНЕГО ВИДА БРЕЛОКА И ЦЕПОЧКИ
+    // =================================================================
+    const KEYCHAIN_SETTINGS = {
+      // Точка крепления начала цепочки к правой грани телефона
+      // (координаты заданы в той же системе, что и .phone-body: -73/-79, 397x737)
+      anchor: { x: -100 + 397 * 0.97, y: 150 + 737 * 0.06 },
+
+      numSegments: 9,          // сколько жёстко скреплённых сегментов в цепочке
+      segmentLength: 20,       // длина одного сегмента цепочки, px
+      segmentThickness: 13,    // толщина сегмента цепочки при отрисовке, px
+
+      keychainSize: 52         // размер (ширина и высота) самого брелока при отрисовке, px
+    };
+
+    const ANCHOR = KEYCHAIN_SETTINGS.anchor;
+    const NUM_SEGMENTS = KEYCHAIN_SETTINGS.numSegments;
+    const SEGMENT_LENGTH = KEYCHAIN_SETTINGS.segmentLength;
+    const SEGMENT_THICKNESS = KEYCHAIN_SETTINGS.segmentThickness;
+    const KEYCHAIN_SIZE = KEYCHAIN_SETTINGS.keychainSize;
+    const KEYCHAIN_RADIUS = KEYCHAIN_SIZE * 0.42; // радиус коллизии брелока
+    const MOUSE_RADIUS = 13;          // радиус "курсора" для столкновений (в 2 раза меньше)
+
+    const GRAVITY = 0.55;
+    const DAMPING = 0.985;
+    const CONSTRAINT_ITERATIONS = 8;
+
+    // Точки цепочки: points[0] - жёстко закреплённый якорь на корпусе телефона,
+    // points[1..N-1] - соединения сегментов, points[N] - центр брелока.
+    const points = [];
+    for (let i = 0; i <= NUM_SEGMENTS; i++) {
+      points.push({
+        x: ANCHOR.x,
+        y: ANCHOR.y + i * SEGMENT_LENGTH,
+        oldx: ANCHOR.x,
+        oldy: ANCHOR.y + i * SEGMENT_LENGTH,
+        invMass: i === 0 ? 0 : (i === NUM_SEGMENTS ? 0.7 : 1) // брелок чуть "тяжелее"
+      });
+    }
+
+    // Заглушка для сегментов цепочки (позже можно заменить на отдельные PNG для каждого сегмента)
+    const segmentImg = new Image();
+    segmentImg.src = 'телефон/центр.png';
+
+    // 12 вариантов внешнего вида брелока, выбираемые кнопками бр1.png..бр12.png.
+    // Реальные варианты ещё не готовы, поэтому все указывают на ту же заглушку центр.png.
+    const KEYCHAIN_VARIANTS = [
+      'телефон/бр1.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png',
+      'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png',
+      'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png'
+    ];
+    const keychainImages = KEYCHAIN_VARIANTS.map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img;
+    });
+    let activeVariant = 0;
+
+    const mouse = { x: -9999, y: -9999, active: false };
+
+
+    window.addEventListener('mousemove', (e) => {
+      const rect = kcCanvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.active = true;
+    });
+    window.addEventListener('mouseleave', () => { mouse.active = false; });
+
+    function updatePoints() {
+      for (const p of points) {
+        if (p.invMass === 0) continue;
+        const vx = (p.x - p.oldx) * DAMPING;
+        const vy = (p.y - p.oldy) * DAMPING;
+        p.oldx = p.x;
+        p.oldy = p.y;
+        p.x += vx;
+        p.y += vy + GRAVITY;
+      }
+    }
+
+    function satisfyDistanceConstraints() {
+      points[0].x = ANCHOR.x;
+      points[0].y = ANCHOR.y;
+      for (let i = 0; i < points.length - 1; i++) {
+        const a = points[i], b = points[i + 1];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 0.0001) dist = 0.0001;
+        const diff = (dist - SEGMENT_LENGTH) / dist;
+        const totalIM = a.invMass + b.invMass;
+        if (totalIM <= 0) continue;
+        const corrX = dx * diff, corrY = dy * diff;
+        a.x += corrX * (a.invMass / totalIM);
+        a.y += corrY * (a.invMass / totalIM);
+        b.x -= corrX * (b.invMass / totalIM);
+        b.y -= corrY * (b.invMass / totalIM);
+      }
+      points[0].x = ANCHOR.x;
+      points[0].y = ANCHOR.y;
+    }
+
+    // Реалистичное отталкивание брелока от курсора: выталкиваем его за пределы
+    // радиуса курсора и добавляем импульс "отдачи", изменяя предыдущую позицию.
+    function applyMouseCollision() {
+      if (!mouse.active) return;
+      const p = points[NUM_SEGMENTS];
+      const dx = p.x - mouse.x;
+      const dy = p.y - mouse.y;
+      let dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.0001) dist = 0.0001;
+      const minDist = KEYCHAIN_RADIUS + MOUSE_RADIUS;
+      if (dist < minDist) {
+        const nx = dx / dist, ny = dy / dist;
+        const push = (minDist - dist);
+        p.x += nx * push;
+        p.y += ny * push;
+        p.oldx -= nx * push * 0.6;
+        p.oldy -= ny * push * 0.6;
+      }
+    }
+
+    function step() {
+      updatePoints();
+      for (let i = 0; i < CONSTRAINT_ITERATIONS; i++) satisfyDistanceConstraints();
+      applyMouseCollision();
+      for (let i = 0; i < 3; i++) satisfyDistanceConstraints();
+      renderKeychain();
+    }
+
+    function renderKeychain() {
+      kctx.clearRect(0, 0, kcCanvas.width, kcCanvas.height);
+
+      // Сегменты цепочки
+      for (let i = 0; i < NUM_SEGMENTS; i++) {
+        const a = points[i], b = points[i + 1];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const len = Math.sqrt(dx * dx + dy * dy) || SEGMENT_LENGTH;
+        const angle = Math.atan2(dy, dx);
+        const midx = (a.x + b.x) / 2, midy = (a.y + b.y) / 2;
+        kctx.save();
+        kctx.translate(midx, midy);
+        kctx.rotate(angle);
+        kctx.drawImage(segmentImg, -len / 2, -SEGMENT_THICKNESS / 2, len, SEGMENT_THICKNESS);
+        kctx.restore();
+      }
+
+      // Сам брелок на конце цепочки
+      const last = points[NUM_SEGMENTS];
+      const prev = points[NUM_SEGMENTS - 1];
+      const swingAngle = Math.atan2(last.y - prev.y, last.x - prev.x) - Math.PI / 2;
+      kctx.save();
+      kctx.translate(last.x, last.y);
+      kctx.rotate(swingAngle);
+      kctx.drawImage(keychainImages[activeVariant], -KEYCHAIN_SIZE / 2, -KEYCHAIN_SIZE / 2, KEYCHAIN_SIZE, KEYCHAIN_SIZE);
+      kctx.restore();
+    }
+
+    // Кнопки бр1.png..бр12.png на телефоне переключают внешний вид брелока
+    const KEYCHAIN_BUTTON_IDS = ['btn1', 'btn2', 'btn3', 'btn4', 'btn5', 'btn6', 'btn7', 'btn8', 'btn9', 'btnStar', 'btn0', 'btnHash'];
+    KEYCHAIN_BUTTON_IDS.forEach((id, index) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('click', () => { activeVariant = index; });
+      }
+    });
+
+    Promise.all([
+      new Promise((res) => { segmentImg.onload = res; segmentImg.onerror = res; }),
+      ...keychainImages.map((img) => new Promise((res) => { img.onload = res; img.onerror = res; }))
+    ]).then(() => {
+      // setInterval вместо requestAnimationFrame, чтобы анимация не замирала,
+      // когда вкладка/предпросмотр считаются невидимыми браузером.
+      setInterval(step, 16);
+    });
+  })();
 </script>
 </body>
 </html>
