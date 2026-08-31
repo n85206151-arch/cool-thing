@@ -562,12 +562,9 @@
   const phoneBody = document.getElementById('phoneBody');
   phoneBody.style.backgroundImage = "url('телефон/телефон.png')";
   
-  // Применяем начальные размеры из CSS-переменных
-  const computedStyle = window.getComputedStyle(phoneBody);
-  const initialWidth = parseInt(computedStyle.getPropertyValue('--phone-width')) || 280;
-  const initialHeight = parseInt(computedStyle.getPropertyValue('--phone-height')) || 520;
-  phoneBody.style.width = initialWidth + 'px';
-  phoneBody.style.height = initialHeight + 'px';
+  // Применяем начальные размеры через CSS-переменные (не прямые стили!)
+  phoneBody.style.setProperty('--phone-width', '280px');
+  phoneBody.style.setProperty('--phone-height', '520px');
 
   // =================================================================
   // НАСТРОЙКИ ЭКРАНА И КОНТЕНТА
