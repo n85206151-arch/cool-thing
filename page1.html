@@ -561,6 +561,13 @@
   // =================================================================
   const phoneBody = document.getElementById('phoneBody');
   phoneBody.style.backgroundImage = "url('телефон/телефон.png')";
+  
+  // Применяем начальные размеры из CSS-переменных
+  const computedStyle = window.getComputedStyle(phoneBody);
+  const initialWidth = parseInt(computedStyle.getPropertyValue('--phone-width')) || 280;
+  const initialHeight = parseInt(computedStyle.getPropertyValue('--phone-height')) || 520;
+  phoneBody.style.width = initialWidth + 'px';
+  phoneBody.style.height = initialHeight + 'px';
 
   // =================================================================
   // НАСТРОЙКИ ЭКРАНА И КОНТЕНТА
@@ -1022,7 +1029,6 @@
     'btn-star': { name: '⭐ Кнопка *', el: '.btn-10', defaults: { x: 20, y: 500, width: 40 }, varPrefix: '--btn' },
     'btn-0': { name: '0️⃣ Кнопка 0', el: '.btn-11', defaults: { x: 120, y: 500, width: 40 }, varPrefix: '--btn' },
     'btn-hash': { name: '#️⃣ Кнопка #', el: '.btn-12', defaults: { x: 220, y: 500, width: 40 }, varPrefix: '--btn' }
-  };
   };
 
   // Хранилище текущих значений
