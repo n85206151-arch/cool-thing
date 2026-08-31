@@ -5,13 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Плейлист — Аудио веб-сайт</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #000; color: #ffb841; font-family: sans-serif; }
+        body { margin: 0; padding: 0; background-color: #000; color: #ffb841; font-family: Verdana, Arial, sans-serif; }
         .wrapper { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
         a { color: #ffb841; text-decoration: none; }
         a:hover { text-decoration: underline; }
         h1 { font-size: 2.4rem; margin-bottom: 16px; }
         p { line-height: 1.6; margin-bottom: 20px; }
-        .back { display: inline-block; margin-top: 24px; padding: 10px 16px; border: 1px solid #ffb841; border-radius: 6px; }
+        .back {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 18px;
+            background: linear-gradient(#fff6b2, #ffbf47);
+            border: 3px solid #000;
+            color: #000;
+            font: bold 14px/1.2 Verdana, Arial, sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s ease;
+        }
+        .back:hover {
+            background: linear-gradient(#ffe98a, #ff9d00);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+            text-decoration: none;
+        }
+        .back:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 #000;
+        }
     </style>
 </head>
 <body>
