@@ -31,63 +31,44 @@
         }
 
         .stage {
-            position: relative;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
         }
 
-        /* КОНТЕЙНЕР ТЕЛЕФОНА */
-        .phone-container {
+        /* Экран - опорный элемент телефонного виджета. */
+        .phone-widget {
             position: relative;
             display: inline-block;
         }
 
-        /* КОРПУС ТЕЛЕФОНА */
+        .screen-wrapper {
+          position: relative;
+          z-index: 2;
+        }
+
         .phone-body {
             position: absolute;
-            top: 0;
-            left: 0;
             z-index: 1;
-            /* НАСТРОЙКИ ТЕЛЕФОНА */
-            --phone-x: -48px;
-            --phone-y: 1px;
-            --phone-width: 397px;
-            --phone-height: 737px;
-            transform: translate(var(--phone-x), var(--phone-y));
-            width: var(--phone-width);
-            height: var(--phone-height);
+          left: -73px;
+          top: -79px;
+          width: 397px;
+          height: 737px;
+          background-image: url('телефон/телефон.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
         }
 
-        /* КОНТЕЙНЕР ЭКРАНА */
-        .screen-wrapper {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* НАСТРОЙКИ ЭКРАНА */
-            --screen-x: 25px;      /* Смещение экрана по X от краю контейнера */
-            --screen-y: 80px;      /* Смещение экрана по Y от края контейнера */
-            margin-left: var(--screen-x);
-            margin-top: var(--screen-y);
-        }
-
         canvas {
-            max-width: 100%;
-            height: auto;
             display: block;
         }
 
-        /* КНОПКИ ТЕЛЕФОНА */
         .phone-button {
             position: absolute;
             z-index: 3;
+          left: var(--x);
+          top: var(--y);
+          width: var(--width);
+          height: var(--height);
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -104,161 +85,63 @@
             transform: scale(0.98);
         }
 
-        /* НАСТРОЙКИ ПОЗИЦИЙ И РАЗМЕРОВ КНОПОК */
-        
-        /* Кнопка 1 (бр1.png) */
         .btn-1 {
-            --btn-x: 20px;
-            --btn-y: 512px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: -5px; --y: 432px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр1.png');
         }
 
-        /* Кнопка 2 (бр2.png) */
         .btn-2 {
-            --btn-x: 105px;
-            --btn-y: 512px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 80px; --y: 432px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр2.png');
         }
 
-        /* Кнопка 3 (бр3.png) */
         .btn-3 {
-            --btn-x: 191px;
-            --btn-y: 512px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 166px; --y: 432px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр3.png');
         }
 
-        /* Кнопка 4 (бр4.png) */
         .btn-4 {
-            --btn-x: 21px;
-            --btn-y: 554px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: -4px; --y: 474px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр4.png');
         }
 
-        /* Кнопка 5 (бр5.png) */
         .btn-5 {
-             --btn-x: 105px;
-             --btn-y: 554px;
-             --btn-w: 84px;
-             --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 80px; --y: 474px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр5.png');
         }
 
-        /* Кнопка 6 (бр6.png) */
         .btn-6 {
-            --btn-x: 190px;
-            --btn-y: 554px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 165px; --y: 474px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр6.png');
         }
 
-        /* Кнопка 7 (бр7.png) */
         .btn-7 {
-            --btn-x: 21px;
-            --btn-y: 595px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: -4px; --y: 515px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр7.png');
         }
 
-        /* Кнопка 8 (бр8.png) */
         .btn-8 {
-            --btn-x: 105px;
-            --btn-y: 595px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 80px; --y: 515px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр8.png');
         }
 
-        /* Кнопка 9 (бр9.png) */
         .btn-9 {
-            --btn-x: 189px;
-            --btn-y: 595px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 164px; --y: 515px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр9.png');
         }
 
-        /* Кнопка * (бр10.png) */
         .btn-10 {
-            --btn-x: 20px;
-            --btn-y: 636px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: -5px; --y: 556px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр10.png');
         }
 
-        /* Кнопка 0 (бр11.png) */
         .btn-11 {
-            --btn-x: 103px;
-            --btn-y: 636px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 78px; --y: 556px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр11.png');
         }
 
-        /* Кнопка # (бр12.png) */
         .btn-12 {
-            --btn-x: 190px;
-            --btn-y: 636px;
-            --btn-w: 84px;
-            --btn-h: 84px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 165px; --y: 556px; --width: 84px; --height: 84px;
             background-image: url('телефон/бр12.png');
         }
 
@@ -266,247 +149,47 @@
 
         /* Кнопка Влево (влево.png) */
         .btn-left {
-            --btn-x: 214px;
-            --btn-y: 457px;
-            --btn-w: 50px;
-            --btn-h: 50px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 189px; --y: 377px; --width: 50px; --height: 50px;
             background-image: url('телефон/влево.png');
         }
 
         /* Кнопка Вправо (вправо.png) */
         .btn-right {
-            --btn-x: 215px;
-            --btn-y: 402px;
-            --btn-w: 50px;
-            --btn-h: 50px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 190px; --y: 322px; --width: 50px; --height: 50px;
             background-image: url('телефон/вправо.png');
         }
 
         /* Кнопка Вверх (вверх.png) */
         .btn-up {
-            --btn-x: 35px;
-            --btn-y: 401px;
-            --btn-w: 50px;
-            --btn-h: 50px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 10px; --y: 321px; --width: 50px; --height: 50px;
             background-image: url('телефон/вверх.png');
         }
 
         /* Кнопка Вниз (вниз.png) */
         .btn-down {
-            --btn-x: 35px;
-            --btn-y: 456px;
-            --btn-w: 50px;
-            --btn-h: 50px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 10px; --y: 376px; --width: 50px; --height: 50px;
             background-image: url('телефон/вниз.png');
         }
 
         /* Центральная кнопка (центр.png) */
         .btn-center {
-            --btn-x: 102px;
-            --btn-y: 406px;
-            --btn-w: 95px;
-            --btn-h: 95px;
-            left: var(--btn-x);
-            top: var(--btn-y);
-            width: var(--btn-w);
-            height: var(--btn-h);
+          --x: 77px; --y: 326px; --width: 95px; --height: 95px;
             background-image: url('телефон/центр.png');
         }
 
-        /* КОНТРОЛЫ */
-        /* ПАНЕЛЬ НАСТРОЕК */
-        .controls-wrapper {
-            position: fixed;
-            right: -420px;
-            top: 0;
-            width: 400px;
-            max-height: 100vh;
-            background: #1a1a1a;
-            border: 1px solid #444;
-            border-radius: 8px 0 0 8px;
-            padding: 20px;
-            color: #f4f6ff;
-            z-index: 1000;
-            overflow-y: auto;
-            transition: right 0.3s ease-in-out;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.5);
-        }
-
-        .controls-wrapper.open {
-            right: 0;
-        }
-
-        .controls-toggle-btn {
-            position: fixed;
-            right: 0;
-            top: 20px;
-            z-index: 1001;
-            background: #2b4066;
-            color: #f4f6ff;
-            border: 1px solid #1a2740;
-            padding: 12px 15px;
-            border-radius: 6px 0 0 6px;
-            font-family: 'DotGothic16', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: -2px 2px 8px rgba(0,0,0,0.3);
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .controls-toggle-btn:hover {
-            background: #3c5685;
-        }
-
-        .controls-toggle-btn:active {
-            transform: translateX(-2px);
-        }
-
-        .controls-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #ffb841;
-        }
-
-        .elements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .element-control {
-            background: #252525;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 15px;
-        }
-
-        .element-name {
-            font-weight: bold;
-            color: #ffb841;
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
-
-        .control-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-            font-size: 12px;
-        }
-
-        .control-label {
-            width: 50px;
-            color: #aaa;
-        }
-
-        .control-input {
-            flex: 1;
-            padding: 6px;
-            background: #1a1a1a;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .control-value {
-            width: 50px;
-            text-align: right;
-            color: #ffb841;
-            font-weight: bold;
-        }
-
-        .control-slider {
-            width: 100%;
-            height: 5px;
-        }
-
-        .export-btn {
-            background: #2b4066;
-            color: #f4f6ff;
-            border: 1px solid #1a2740;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-family: 'DotGothic16', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background 0.2s, transform 0.1s;
-            margin-right: 10px;
-        }
-
-        .export-btn:hover { background: #3c5685; }
-        .export-btn:active { transform: translateY(2px); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-
-        .export-code {
-            background: #1a1a1a;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-size: 11px;
-            color: #0f0;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            margin-top: 15px;
-        }
-
-        /* Навигация */
-        .navigation {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .back {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 10px 16px;
-            border: 1px solid #ffb841;
-            border-radius: 6px;
-            color: #ffb841;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
 
 <div class="stage">
-    <div class="phone-container">
-        <!-- Корпус телефона -->
+    <div class="phone-widget">
+      <div class="screen-wrapper">
+        <canvas id="mockupCanvas"></canvas>
+
         <div class="phone-body" id="phoneBody"></div>
 
-        <!-- Экран и приложение -->
-        <div class="screen-wrapper">
-            <canvas id="mockupCanvas"></canvas>
-        </div>
+        <div class="phone-body" id="phoneBody"></div>
 
-        <!-- Все кнопки телефона -->
         <!-- Навигационные кнопки -->
         <div class="phone-button btn-up" id="btnNavUp"></div>
         <div class="phone-button btn-down" id="btnNavDown"></div>
@@ -527,47 +210,11 @@
         <div class="phone-button btn-10" id="btnStar"></div>
         <div class="phone-button btn-11" id="btn0"></div>
         <div class="phone-button btn-12" id="btnHash"></div>
-    </div>
-
-    <!-- Кнопка открытия панели настроек -->
-    <button class="controls-toggle-btn" id="toggleControlsBtn">⚙️</button>
-
-    <!-- ПАНЕЛЬ НАСТРОЕК -->
-    <div class="controls-wrapper" id="controlsPanel">
-        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div class="controls-title">Настройка элементов</div>
-            <button class="controls-toggle-btn" id="closeControlsBtn" style="position: static; margin-right: -10px; padding: 8px 10px; font-size: 14px;">✕</button>
         </div>
-        
-        <div class="elements-grid" id="controlsGrid"></div>
-
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button class="export-btn" onclick="exportCSS()">📋 Экспорт</button>
-            <button class="export-btn" onclick="resetToDefaults()" style="background: #66402b;">↻ Сброс</button>
-        </div>
-
-        <div class="export-code" id="exportOutput" style="display: none;"></div>
-    </div>
-
-    <!-- Навигация -->
-    <div class="navigation">
-        <a href="index.html" class="back">← Вернуться на главную</a>
     </div>
 </div>
 
 <script>
-  // =================================================================
-  // Загрузка изображения телефона
-  // =================================================================
-  const phoneBody = document.getElementById('phoneBody');
-  phoneBody.style.backgroundImage = "url('телефон/телефон.png')";
-  
-  // Применяем начальные размеры через CSS-переменные (не прямые стили!)
-  phoneBody.style.setProperty('--phone-x', '-48px');
-  phoneBody.style.setProperty('--phone-y', '1px');
-  phoneBody.style.setProperty('--phone-width', '397px');
-  phoneBody.style.setProperty('--phone-height', '737px');
-
   // =================================================================
   // НАСТРОЙКИ ЭКРАНА И КОНТЕНТА
   // =================================================================
@@ -609,8 +256,6 @@
     signalLevel: 4,           
     batteryLevel: 70,         
     
-    margin: 0,               
-    shadow: false,            
     lcdEffect: true,          
     lcdIntensity: 0.45        
   };
@@ -636,9 +281,9 @@
     const screenW = config.screenWidth;
     const bodyH = config.bodyHeight;
     const totalH = STATUS_H + CARRIER_H + TITLE_H + bodyH + SOFT_H;
-    const minX = config.margin + BEZEL_PAD;
+    const minX = BEZEL_PAD;
     const maxX = minX + screenW;
-    const minY = config.margin + BEZEL_PAD;
+    const minY = BEZEL_PAD;
     const maxY = minY + totalH;
     return { minX, maxX, minY, maxY, totalH };
   }
@@ -761,8 +406,8 @@
 
     const bezelW = SCREEN_W + BEZEL_PAD*2;
     const bezelH = BEZEL_PAD*2 + bounds.totalH;
-    const totalW = bezelW + config.margin*2;
-    const totalH = bezelH + config.margin*2;
+    const totalW = bezelW;
+    const totalH = bezelH;
 
     canvas.width = totalW * RENDER_SCALE;
     canvas.height = totalH * RENDER_SCALE;
@@ -771,21 +416,7 @@
     ctx.setTransform(RENDER_SCALE, 0, 0, RENDER_SCALE, 0, 0);
     ctx.clearRect(0, 0, totalW, totalH);
 
-    const bx = config.margin, by = config.margin;
-
-    if (config.shadow){
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.55)';
-      ctx.shadowBlur = 34;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 18;
-      ctx.fillStyle = '#0b0c0e';
-      roundRectPath(ctx, bx, by, bezelW, bezelH, BEZEL_RADIUS);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    const sx = bx + BEZEL_PAD, sy = by + BEZEL_PAD;
+    const sx = BEZEL_PAD, sy = BEZEL_PAD;
     let rowY = sy;
 
     // Статус-бар
@@ -1003,201 +634,6 @@
   document.getElementById('btnCenter').addEventListener('click', () => {
     console.log('Центральная кнопка');
   });
-
-  // =================================================================
-  // СИСТЕМА НАСТРОЕК ЭЛЕМЕНТОВ
-  // =================================================================
-
-  // Определение всех элементов для настройки
-  const elementsConfig = {
-    'phoneBody': { name: 'Корпус телефона', el: '#phoneBody', defaults: { x: -48, y: 1, width: 397 }, varPrefix: '--phone', isPhone: true },
-    'btn-up': { name: '🔼 Кнопка Вверх', el: '.btn-up', defaults: { x: 120, y: 210, width: 50 }, varPrefix: '--btn' },
-    'btn-down': { name: '🔽 Кнопка Вниз', el: '.btn-down', defaults: { x: 120, y: 310, width: 50 }, varPrefix: '--btn' },
-    'btn-left': { name: '◀ Кнопка Влево', el: '.btn-left', defaults: { x: 35, y: 260, width: 50 }, varPrefix: '--btn' },
-    'btn-right': { name: '▶ Кнопка Вправо', el: '.btn-right', defaults: { x: 210, y: 260, width: 50 }, varPrefix: '--btn' },
-    'btn-center': { name: '⭕ Центр', el: '.btn-center', defaults: { x: 110, y: 255, width: 70 }, varPrefix: '--btn' },
-    'btn-1': { name: '1️⃣ Кнопка 1', el: '.btn-1', defaults: { x: 20, y: 320, width: 40 }, varPrefix: '--btn' },
-    'btn-2': { name: '2️⃣ Кнопка 2', el: '.btn-2', defaults: { x: 120, y: 320, width: 40 }, varPrefix: '--btn' },
-    'btn-3': { name: '3️⃣ Кнопка 3', el: '.btn-3', defaults: { x: 220, y: 320, width: 40 }, varPrefix: '--btn' },
-    'btn-4': { name: '4️⃣ Кнопка 4', el: '.btn-4', defaults: { x: 20, y: 380, width: 40 }, varPrefix: '--btn' },
-    'btn-5': { name: '5️⃣ Кнопка 5', el: '.btn-5', defaults: { x: 120, y: 380, width: 40 }, varPrefix: '--btn' },
-    'btn-6': { name: '6️⃣ Кнопка 6', el: '.btn-6', defaults: { x: 220, y: 380, width: 40 }, varPrefix: '--btn' },
-    'btn-7': { name: '7️⃣ Кнопка 7', el: '.btn-7', defaults: { x: 20, y: 440, width: 40 }, varPrefix: '--btn' },
-    'btn-8': { name: '8️⃣ Кнопка 8', el: '.btn-8', defaults: { x: 120, y: 440, width: 40 }, varPrefix: '--btn' },
-    'btn-9': { name: '9️⃣ Кнопка 9', el: '.btn-9', defaults: { x: 220, y: 440, width: 40 }, varPrefix: '--btn' },
-    'btn-star': { name: '⭐ Кнопка *', el: '.btn-10', defaults: { x: 20, y: 500, width: 40 }, varPrefix: '--btn' },
-    'btn-0': { name: '0️⃣ Кнопка 0', el: '.btn-11', defaults: { x: 120, y: 500, width: 40 }, varPrefix: '--btn' },
-    'btn-hash': { name: '#️⃣ Кнопка #', el: '.btn-12', defaults: { x: 220, y: 500, width: 40 }, varPrefix: '--btn' }
-  };
-
-  // Хранилище текущих значений
-  const elementValues = {};
-
-  // Инициализация значений
-  Object.keys(elementsConfig).forEach(key => {
-    elementValues[key] = { ...elementsConfig[key].defaults };
-  });
-
-  // Создание UI панели
-  function initControls() {
-    const grid = document.getElementById('controlsGrid');
-    grid.innerHTML = '';
-
-    Object.entries(elementsConfig).forEach(([key, config]) => {
-      const div = document.createElement('div');
-      div.className = 'element-control';
-      
-      const values = elementValues[key];
-      const minWidth = config.isPhone ? 140 : 20;
-      const maxWidth = config.isPhone ? 560 : 120;
-      const widthLabel = config.isPhone ? 'Ширина:' : 'Размер:';
-
-      div.innerHTML = `
-        <div class="element-name">${config.name}</div>
-        
-        <div class="control-row">
-          <label class="control-label">X:</label>
-          <input type="range" class="control-slider" min="-1000" max="1000" step="1" value="${values.x}" data-key="${key}" data-prop="x">
-          <input type="number" class="control-input" min="-1000" max="1000" step="1" value="${values.x}" data-key="${key}" data-prop="x">
-          <span class="control-value">${values.x}px</span>
-        </div>
-
-        <div class="control-row">
-          <label class="control-label">Y:</label>
-          <input type="range" class="control-slider" min="-1000" max="1000" step="1" value="${values.y}" data-key="${key}" data-prop="y">
-          <input type="number" class="control-input" min="-1000" max="1000" step="1" value="${values.y}" data-key="${key}" data-prop="y">
-          <span class="control-value">${values.y}px</span>
-        </div>
-
-        <div class="control-row">
-          <label class="control-label">W:</label>
-          <input type="range" class="control-slider" min="${minWidth}" max="${maxWidth}" step="1" value="${values.width}" data-key="${key}" data-prop="width">
-          <input type="number" class="control-input" min="${minWidth}" max="${maxWidth}" step="1" value="${values.width}" data-key="${key}" data-prop="width">
-          <span class="control-value">${values.width}px</span>
-        </div>
-      `;
-
-      grid.appendChild(div);
-    });
-
-    // Привязка событий
-    document.querySelectorAll('[data-key][data-prop]').forEach(input => {
-      input.addEventListener('input', (e) => {
-        const key = e.target.dataset.key;
-        const prop = e.target.dataset.prop;
-        const value = parseInt(e.target.value);
-
-        elementValues[key][prop] = value;
-        updateAllInputs(key, prop, value);
-        updateElement(key);
-      });
-    });
-  }
-
-  function updateAllInputs(key, prop, value) {
-    const displayValue = value;
-    const unit = 'px';
-
-    document.querySelectorAll(`[data-key="${key}"][data-prop="${prop}"]`).forEach(input => {
-      if (input.type === 'range' || input.type === 'number') {
-        input.value = value;
-      }
-    });
-
-    // Обновляем дисплей значения
-    document.querySelectorAll(`[data-key="${key}"]`).forEach(input => {
-      if (input.nextElementSibling && input.nextElementSibling.classList.contains('control-value')) {
-        if (input.dataset.prop === prop) {
-          input.nextElementSibling.textContent = displayValue + unit;
-        }
-      }
-    });
-  }
-
-  function updateElement(key) {
-    const config = elementsConfig[key];
-    const values = elementValues[key];
-    const el = document.querySelector(config.el);
-
-    if (el) {
-      el.style.setProperty(`${config.varPrefix}-x`, `${values.x}px`);
-      el.style.setProperty(`${config.varPrefix}-y`, `${values.y}px`);
-      
-      if (key === 'phoneBody') {
-        // Для телефона: пропорциональное масштабирование по высоте (520/280 = 1.857)
-        const height = Math.round(values.width * (520 / 280));
-        el.style.setProperty(`${config.varPrefix}-width`, `${values.width}px`);
-        el.style.setProperty(`${config.varPrefix}-height`, `${height}px`);
-      } else {
-        // Для кнопок: квадратные (ширина = высота)
-        el.style.setProperty(`${config.varPrefix}-w`, `${values.width}px`);
-        el.style.setProperty(`${config.varPrefix}-h`, `${values.width}px`);
-      }
-    }
-  }
-
-  function exportCSS() {
-    let css = `/* Вставьте этот код в <style> тег вашего HTML файла */\n\n`;
-
-    Object.entries(elementsConfig).forEach(([key, config]) => {
-      const values = elementValues[key];
-      
-      if (key === 'phoneBody') {
-        const height = Math.round(values.width * (520 / 280));
-        css += `.phone-body {\n`;
-        css += `    --phone-x: ${values.x}px;\n`;
-        css += `    --phone-y: ${values.y}px;\n`;
-        css += `    --phone-width: ${values.width}px;\n`;
-        css += `    --phone-height: ${height}px;\n`;
-        css += `}\n\n`;
-      } else {
-        const classList = config.el.substring(1); // Убрать точку
-        css += `.${classList} {\n`;
-        css += `    --btn-x: ${values.x}px;\n`;
-        css += `    --btn-y: ${values.y}px;\n`;
-        css += `    --btn-w: ${values.width}px;\n`;
-        css += `    --btn-h: ${values.width}px;\n`;
-        css += `}\n\n`;
-      }
-    });
-
-    const output = document.getElementById('exportOutput');
-    output.textContent = css;
-    output.style.display = 'block';
-    
-    // Автоматическая селекция текста
-    const range = document.createRange();
-    range.selectNodeContents(output);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-  }
-
-  function resetToDefaults() {
-    Object.keys(elementsConfig).forEach(key => {
-      elementValues[key] = { ...elementsConfig[key].defaults };
-      updateElement(key);
-    });
-    initControls();
-    document.getElementById('exportOutput').style.display = 'none';
-  }
-
-  // =================================================================
-  // ОБРАБОТЧИКИ КНОПОК TOGGLE ПАНЕЛИ НАСТРОЕК
-  // =================================================================
-
-  const controlsPanel = document.getElementById('controlsPanel');
-  const toggleBtn = document.getElementById('toggleControlsBtn');
-  const closeBtn = document.getElementById('closeControlsBtn');
-
-  function toggleControls() {
-    controlsPanel.classList.toggle('open');
-  }
-
-  toggleBtn.addEventListener('click', toggleControls);
-  closeBtn.addEventListener('click', toggleControls);
-
-  // Инициализация при загрузке
-  initControls();
 
   // Отрисовка
   document.fonts.ready.then(() => {
