@@ -63,13 +63,12 @@
             display: block;
         }
 
+        /* Позиция/размер/картинка каждой кнопки задаются инлайново через JS (см. config BUTTONS) */
         .phone-button {
             position: absolute;
             z-index: 3;
-          left: var(--x);
-          top: var(--y);
-          width: var(--width);
-          height: var(--height);
+            left: var(--x); top: var(--y); width: var(--width); height: var(--height);
+            background-image: var(--img);
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -78,105 +77,8 @@
             transition: opacity 0.1s;
         }
 
-        .phone-button:hover {
-            opacity: 1;
-        }
-
-        .phone-button:active {
-            transform: scale(0.98);
-        }
-
-        .btn-1 {
-          --x: -5px; --y: 432px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр1.png');
-        }
-
-        .btn-2 {
-          --x: 80px; --y: 432px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр2.png');
-        }
-
-        .btn-3 {
-          --x: 166px; --y: 432px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр3.png');
-        }
-
-        .btn-4 {
-          --x: -4px; --y: 474px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр4.png');
-        }
-
-        .btn-5 {
-          --x: 80px; --y: 474px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр5.png');
-        }
-
-        .btn-6 {
-          --x: 165px; --y: 474px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр6.png');
-        }
-
-        .btn-7 {
-          --x: -4px; --y: 515px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр7.png');
-        }
-
-        .btn-8 {
-          --x: 80px; --y: 515px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр8.png');
-        }
-
-        .btn-9 {
-          --x: 164px; --y: 515px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр9.png');
-        }
-
-        .btn-10 {
-          --x: -5px; --y: 556px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр10.png');
-        }
-
-        .btn-11 {
-          --x: 78px; --y: 556px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр11.png');
-        }
-
-        .btn-12 {
-          --x: 165px; --y: 556px; --width: 84px; --height: 84px;
-            background-image: url('телефон/бр12.png');
-        }
-
-        /* Навигационные кнопки */
-
-        /* Кнопка Влево (влево.png) */
-        .btn-left {
-          --x: 189px; --y: 377px; --width: 50px; --height: 50px;
-            background-image: url('телефон/влево.png');
-        }
-
-        /* Кнопка Вправо (вправо.png) */
-        .btn-right {
-          --x: 190px; --y: 322px; --width: 50px; --height: 50px;
-            background-image: url('телефон/вправо.png');
-        }
-
-        /* Кнопка Вверх (вверх.png) */
-        .btn-up {
-          --x: 10px; --y: 321px; --width: 50px; --height: 50px;
-            background-image: url('телефон/вверх.png');
-        }
-
-        /* Кнопка Вниз (вниз.png) */
-        .btn-down {
-          --x: 10px; --y: 376px; --width: 50px; --height: 50px;
-            background-image: url('телефон/вниз.png');
-        }
-
-        /* Центральная кнопка (центр.png) */
-        .btn-center {
-          --x: 77px; --y: 326px; --width: 95px; --height: 95px;
-            background-image: url('телефон/центр.png');
-        }
+        .phone-button:hover { opacity: 1; }
+        .phone-button:active { transform: scale(0.98); }
 
         /* Холст для брелока с цепочкой, привязанного к правому краю телефона */
         .keychain-canvas {
@@ -200,31 +102,10 @@
 
         <div class="phone-body" id="phoneBody"></div>
 
-        <div class="phone-body" id="phoneBody"></div>
-
         <!-- Брелок с цепочкой, прикреплённый к правому краю телефона -->
         <canvas class="keychain-canvas" id="keychainCanvas"></canvas>
 
-        <!-- Навигационные кнопки -->
-        <div class="phone-button btn-up" id="btnNavUp"></div>
-        <div class="phone-button btn-down" id="btnNavDown"></div>
-        <div class="phone-button btn-left" id="btnNavLeft"></div>
-        <div class="phone-button btn-right" id="btnNavRight"></div>
-        <div class="phone-button btn-center" id="btnCenter"></div>
-
-        <!-- Цифровые кнопки 1-9, *, 0, # -->
-        <div class="phone-button btn-1" id="btn1"></div>
-        <div class="phone-button btn-2" id="btn2"></div>
-        <div class="phone-button btn-3" id="btn3"></div>
-        <div class="phone-button btn-4" id="btn4"></div>
-        <div class="phone-button btn-5" id="btn5"></div>
-        <div class="phone-button btn-6" id="btn6"></div>
-        <div class="phone-button btn-7" id="btn7"></div>
-        <div class="phone-button btn-8" id="btn8"></div>
-        <div class="phone-button btn-9" id="btn9"></div>
-        <div class="phone-button btn-10" id="btnStar"></div>
-        <div class="phone-button btn-11" id="btn0"></div>
-        <div class="phone-button btn-12" id="btnHash"></div>
+        <!-- Навигационные и цифровые кнопки создаются динамически, см. config BUTTONS -->
         </div>
     </div>
 </div>
@@ -275,6 +156,47 @@
     lcdIntensity: 0.45        
   };
   // =================================================================
+
+  // --- Кнопки телефона: id, позиция/размер (px) и картинка ---
+  const BUTTONS = [
+    { id: 'btnNavUp',    x: 10,  y: 321, w: 50, h: 50, img: 'вверх.png' },
+    { id: 'btnNavDown',  x: 10,  y: 376, w: 50, h: 50, img: 'вниз.png' },
+    { id: 'btnNavLeft',  x: 189, y: 377, w: 50, h: 50, img: 'влево.png' },
+    { id: 'btnNavRight', x: 190, y: 322, w: 50, h: 50, img: 'вправо.png' },
+    { id: 'btnCenter',   x: 77,  y: 326, w: 95, h: 95, img: 'центр.png' },
+    { id: 'btn1',    x: -5,  y: 432, w: 84, h: 84, img: 'бр1.png' },
+    { id: 'btn2',    x: 80,  y: 432, w: 84, h: 84, img: 'бр2.png' },
+    { id: 'btn3',    x: 166, y: 432, w: 84, h: 84, img: 'бр3.png' },
+    { id: 'btn4',    x: -4,  y: 474, w: 84, h: 84, img: 'бр4.png' },
+    { id: 'btn5',    x: 80,  y: 474, w: 84, h: 84, img: 'бр5.png' },
+    { id: 'btn6',    x: 165, y: 474, w: 84, h: 84, img: 'бр6.png' },
+    { id: 'btn7',    x: -4,  y: 515, w: 84, h: 84, img: 'бр7.png' },
+    { id: 'btn8',    x: 80,  y: 515, w: 84, h: 84, img: 'бр8.png' },
+    { id: 'btn9',    x: 164, y: 515, w: 84, h: 84, img: 'бр9.png' },
+    { id: 'btnStar', x: -5,  y: 556, w: 84, h: 84, img: 'бр10.png' },
+    { id: 'btn0',    x: 78,  y: 556, w: 84, h: 84, img: 'бр11.png' },
+    { id: 'btnHash', x: 165, y: 556, w: 84, h: 84, img: 'бр12.png' }
+  ];
+  // Кнопки бр1..бр12 (в порядке из BUTTONS) также переключают внешний вид брелока
+  const KEYCHAIN_BUTTON_IDS = ['btn1','btn2','btn3','btn4','btn5','btn6','btn7','btn8','btn9','btnStar','btn0','btnHash'];
+
+  const screenWrapper = document.querySelector('.screen-wrapper');
+  BUTTONS.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'phone-button';
+    el.id = b.id;
+    el.style.setProperty('--x', b.x + 'px');
+    el.style.setProperty('--y', b.y + 'px');
+    el.style.setProperty('--width', b.w + 'px');
+    el.style.setProperty('--height', b.h + 'px');
+    el.style.setProperty('--img', `url('телефон/${b.img}')`);
+    const kcIndex = KEYCHAIN_BUTTON_IDS.indexOf(b.id);
+    el.addEventListener('click', () => {
+      console.log(`Нажата кнопка: ${b.id}`);
+      if (kcIndex !== -1) window.dispatchEvent(new CustomEvent('keychain-variant', { detail: kcIndex }));
+    });
+    screenWrapper.appendChild(el);
+  });
 
   const canvas = document.getElementById('mockupCanvas');
   const ctx = canvas.getContext('2d');
@@ -636,20 +558,6 @@
     }
   });
 
-  // Обработчики для цифровых кнопок (просто для отзывчивости)
-  ['btn1', 'btn2', 'btn3', 'btn4', 'btn5', 'btn6', 'btn7', 'btn8', 'btn9', 'btnStar', 'btn0', 'btnHash'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) {
-      btn.addEventListener('click', () => {
-        console.log(`Нажата кнопка: ${id}`);
-      });
-    }
-  });
-
-  document.getElementById('btnCenter').addEventListener('click', () => {
-    console.log('Центральная кнопка');
-  });
-
   // Отрисовка
   document.fonts.ready.then(() => {
     render();
@@ -683,7 +591,7 @@
       segmentLength: 20,       // длина одного сегмента цепочки, px
       segmentThickness: 13,    // толщина сегмента цепочки при отрисовке, px
 
-      keychainSize: 52         // размер (ширина и высота) самого брелока при отрисовке, px
+      keychainSize: 80         // размер (ширина и высота) самого брелока при отрисовке, px
     };
 
     const ANCHOR = KEYCHAIN_SETTINGS.anchor;
@@ -713,14 +621,14 @@
 
     // Заглушка для сегментов цепочки (позже можно заменить на отдельные PNG для каждого сегмента)
     const segmentImg = new Image();
-    segmentImg.src = 'телефон/центр.png';
+    segmentImg.src = 'цепь.png';
 
     // 12 вариантов внешнего вида брелока, выбираемые кнопками бр1.png..бр12.png.
     // Реальные варианты ещё не готовы, поэтому все указывают на ту же заглушку центр.png.
     const KEYCHAIN_VARIANTS = [
-      'телефон/бр1.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png',
-      'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png',
-      'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png', 'телефон/центр.png'
+      'брлк1.png', 'брлк2.png', 'брлк3.png', 'брлк4.png',
+      'брлк5.png', 'брлк6.png', 'брлк7.png', 'брлк8.png',
+      'брлк9.png', 'брлк10.png', 'брлк11.png', 'брлк12.png'
     ];
     const keychainImages = KEYCHAIN_VARIANTS.map((src) => {
       const img = new Image();
@@ -829,14 +737,8 @@
       kctx.restore();
     }
 
-    // Кнопки бр1.png..бр12.png на телефоне переключают внешний вид брелока
-    const KEYCHAIN_BUTTON_IDS = ['btn1', 'btn2', 'btn3', 'btn4', 'btn5', 'btn6', 'btn7', 'btn8', 'btn9', 'btnStar', 'btn0', 'btnHash'];
-    KEYCHAIN_BUTTON_IDS.forEach((id, index) => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener('click', () => { activeVariant = index; });
-      }
-    });
+    // Кнопки бр1.png..бр12.png (события посылаются кнопками из основного скрипта) переключают вид брелока
+    window.addEventListener('keychain-variant', (e) => { activeVariant = e.detail; });
 
     Promise.all([
       new Promise((res) => { segmentImg.onload = res; segmentImg.onerror = res; }),
