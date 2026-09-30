@@ -1,754 +1,309 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Видеоархив — Ретро Телефон</title>
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; }
-        
-        html, body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background: radial-gradient(ellipse at 50% 20%, #26282f, #15161a 70%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: 'DotGothic16', sans-serif;
-        }
-        
-        body::before {
-            content: "";
-            position: absolute; 
-            inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px);
-            background-size: 3px 3px;
-            pointer-events: none;
-            z-index: -1;
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#0c0c0c">
+	<title>видеоархив // системный раздел</title>
+	<style>
+		:root {
+			color-scheme: dark;
+			--bg: #0c0c0c;
+			--panel: #111;
+			--green: #00ff66;
+			--white: #f4f4f4;
+			--pink: #ff3366;
+			--line: rgba(0, 255, 102, .55);
+		}
 
-        .stage {
-            padding: 20px;
-        }
+		* { box-sizing: border-box; }
 
-        /* Экран - опорный элемент телефонного виджета. */
-        .phone-widget {
-            position: relative;
-            display: inline-block;
-        }
+		body {
+			min-height: 100vh;
+			margin: 0;
+			background: var(--bg);
+			color: var(--green);
+			font-family: "Courier New", Consolas, monospace;
+			text-transform: lowercase;
+		}
 
-        .screen-wrapper {
-          position: relative;
-          z-index: 2;
-        }
+		a { color: inherit; }
 
-        .phone-body {
-            position: absolute;
-            z-index: 1;
-          left: -73px;
-          top: -79px;
-          width: 397px;
-          height: 737px;
-          background-image: url('телефон/телефон.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            pointer-events: none; /* пропускает клики/колесо к canvas под собой */
-        }
+		.page-shell {
+			width: min(100% - 40px, 920px);
+			margin: 0 auto;
+			padding: 28px 0 64px;
+		}
 
-        canvas {
-            display: block;
-        }
+		.status-line {
+			display: flex;
+			justify-content: space-between;
+			gap: 16px;
+			padding: 8px 0;
+			border-top: 1px dashed var(--line);
+			border-bottom: 1px dashed var(--line);
+			color: var(--white);
+			font-size: .8rem;
+		}
 
-        /* Позиция/размер/картинка каждой кнопки задаются инлайново через JS (см. config BUTTONS) */
-        .phone-button {
-            position: absolute;
-            z-index: 3;
-            left: var(--x); top: var(--y); width: var(--width); height: var(--height);
-            background-image: var(--img);
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            cursor: pointer;
-            opacity: 0.95;
-            transition: opacity 0.1s;
-        }
+		.menu-trigger,
+		.menu-close,
+		.menu-heading {
+			border: 1px solid var(--green);
+			border-radius: 0;
+			background: transparent;
+			color: var(--green);
+			font: inherit;
+			cursor: pointer;
+		}
 
-        .phone-button:hover { opacity: 1; }
-        .phone-button:active { transform: scale(0.98); }
+		.menu-trigger {
+			margin: 28px 0 36px;
+			padding: 12px 16px;
+			box-shadow: 4px 4px 0 var(--green);
+		}
 
-        /* Холст для брелока с цепочкой, привязанного к правому краю телефона */
-        .keychain-canvas {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 700px;
-            height: 900px;
-            z-index: 5;
-            pointer-events: none;
-        }
+		.menu-trigger:hover,
+		.menu-trigger:focus-visible,
+		.menu-close:hover,
+		.menu-close:focus-visible {
+			background: var(--green);
+			color: var(--bg);
+			outline: none;
+			transform: translate(-2px, -2px);
+		}
 
-    </style>
+		h1 {
+			margin: 0 0 12px;
+			color: var(--white);
+			font-size: clamp(2rem, 7vw, 4.5rem);
+			font-weight: 400;
+			letter-spacing: -.08em;
+		}
+
+		.intro {
+			max-width: 620px;
+			color: var(--white);
+			line-height: 1.7;
+		}
+
+		.archive-block {
+			margin-top: 44px;
+			padding: 20px;
+			border: 1px dashed var(--line);
+		}
+
+		.archive-block h2 {
+			margin: 0 0 16px;
+			color: var(--pink);
+			font-size: 1rem;
+			font-weight: 400;
+		}
+
+		.archive-block p { margin: 0; line-height: 1.7; }
+
+		.home-link {
+			display: inline-block;
+			margin-top: 28px;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 4px;
+		}
+
+		.menu-backdrop {
+			position: fixed;
+			z-index: 10;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			border: 0;
+			background: rgba(0, 0, 0, .78);
+			cursor: default;
+		}
+
+		.menu-panel {
+			position: fixed;
+			z-index: 11;
+			inset: 0 0 0 auto;
+			width: min(440px, 100%);
+			height: 100vh;
+			overflow-y: auto;
+			padding: 24px;
+			border-left: 1px solid var(--green);
+			background: var(--panel);
+			box-shadow: -8px 0 0 rgba(0, 255, 102, .14);
+		}
+
+		.menu-panel[hidden],
+		.menu-backdrop[hidden] { display: none; }
+
+		.menu-topline {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 16px;
+			margin-bottom: 26px;
+			padding-bottom: 12px;
+			border-bottom: 1px dashed var(--line);
+			color: var(--white);
+			font-size: .8rem;
+		}
+
+		.menu-close { padding: 8px 10px; }
+
+		.menu-group { border-bottom: 1px dashed var(--line); }
+
+		.menu-heading {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+			padding: 17px 4px;
+			border: 0;
+			text-align: left;
+			font-size: 1.15rem;
+		}
+
+		.menu-heading::after { content: "+"; color: var(--pink); }
+		.menu-group:hover .menu-heading::after,
+		.menu-group:focus-within .menu-heading::after,
+		.menu-group.is-open .menu-heading::after { content: "−"; }
+
+		.submenu {
+			display: none;
+			margin: 0;
+			padding: 0 0 16px 18px;
+			list-style: none;
+		}
+
+		.menu-group:hover .submenu,
+		.menu-group:focus-within .submenu,
+		.menu-group.is-open .submenu { display: block; }
+
+		.submenu a {
+			display: block;
+			padding: 8px 10px;
+			color: var(--white);
+			text-decoration: none;
+		}
+
+		.submenu a::before { content: "// "; color: var(--green); }
+		.submenu a:hover,
+		.submenu a:focus-visible {
+			outline: 1px dashed var(--green);
+			background: var(--green);
+			color: var(--bg);
+		}
+
+		.menu-note { margin-top: 24px; color: var(--pink); font-size: .8rem; }
+
+		:focus-visible { outline: 2px dashed var(--pink); outline-offset: 4px; }
+
+		@media (max-width: 520px) {
+			.page-shell { width: min(100% - 28px, 920px); padding-top: 16px; }
+			.status-line { font-size: .68rem; }
+			.menu-panel { padding: 18px; }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; }
+		}
+	</style>
 </head>
 <body>
-
-<div class="stage">
-    <div class="phone-widget">
-      <div class="screen-wrapper">
-        <canvas id="mockupCanvas"></canvas>
-
-        <div class="phone-body" id="phoneBody"></div>
-
-        <!-- Брелок с цепочкой, прикреплённый к правому краю телефона -->
-        <canvas class="keychain-canvas" id="keychainCanvas"></canvas>
-
-        <!-- Навигационные и цифровые кнопки создаются динамически, см. config BUTTONS -->
-        </div>
-    </div>
-</div>
-
-<script>
-  // =================================================================
-  // НАСТРОЙКИ ЭКРАНА И КОНТЕНТА
-  // =================================================================
-  const config = {
-    // --- УДОБНАЯ НАСТРОЙКА РАЗМЕРОВ ЭКРАНА ---
-    screenWidth: 230,      // Ширина дисплея в пикселях
-    bodyHeight: 210,       // Высота текстовой области дисплея в пикселях
-
-    fontStack: "'DotGothic16', sans-serif",
-    
-    bg: "#eef0e4",            
-    fg: "#1c1e16",            
-    titleBg: "#2b4066",       
-    titleFg: "#f4f6ff",       
-    
-    carrier: "au by KDDI",
-    clock: "19:24",
-    
-    // --- СПИСОК СТРАНИЦ ТЕЛЕФОНА ---
-    currentPage: 0,
-    pages: [
-      {
-        title: "悪夢療法 - Ч.1",
-        bodyText: "いつも半端にサンダルという格好の男が、今夜はスーツにマフラー姿で店に入って来た。\n\nラックの帽子を整理していた仕事中の私は、手を休めてその男の顔を確かめた。深く被った帽子のせいで顔がよく分かるのが日頃の女の客だといつも、私の心の中では小さく舌を巻いた。"
-      },
-      {
-        title: "悪夢療法 - Ч.2",
-        bodyText: "しかし、今日の彼は違った。何か重大な決意を秘めたような、そんな鋭い視線を私に向けている。外では冷たい雨が降り続いており、彼のコートの肩は少し濡れていた。\n\n「いらっしゃいませ」\n\n私は努めて冷静な声を出し、カウンターの奥から彼を見つめ返した。"
-      },
-      {
-        title: "悪夢療法 - Ч.3",
-        bodyText: "彼は無言のままゆっくりと近づいてくる...\n\n pocketから取り出したのは、古びた小さな鍵だった。テーブルの上にそれを静かに置くと、低い声で囁いた。\n\n「これを...探していたんだろう？」"
-      }
-    ],
-    
-    softLeft: "戻る",       
-    softRight: "メニュー",   
-    
-    signalLevel: 4,           
-    batteryLevel: 70,         
-    
-    lcdEffect: true,          
-    lcdIntensity: 0.45        
-  };
-  // =================================================================
-
-  // --- Кнопки телефона: id, позиция/размер (px) и картинка ---
-  const BUTTONS = [
-    { id: 'btnNavUp',    x: 10,  y: 321, w: 50, h: 50, img: 'вверх.png' },
-    { id: 'btnNavDown',  x: 10,  y: 376, w: 50, h: 50, img: 'вниз.png' },
-    { id: 'btnNavLeft',  x: 189, y: 377, w: 50, h: 50, img: 'влево.png' },
-    { id: 'btnNavRight', x: 190, y: 322, w: 50, h: 50, img: 'вправо.png' },
-    { id: 'btnCenter',   x: 77,  y: 326, w: 95, h: 95, img: 'центр.png' },
-    { id: 'btn1',    x: -5,  y: 432, w: 84, h: 84, img: 'бр1.png' },
-    { id: 'btn2',    x: 80,  y: 432, w: 84, h: 84, img: 'бр2.png' },
-    { id: 'btn3',    x: 166, y: 432, w: 84, h: 84, img: 'бр3.png' },
-    { id: 'btn4',    x: -4,  y: 474, w: 84, h: 84, img: 'бр4.png' },
-    { id: 'btn5',    x: 80,  y: 474, w: 84, h: 84, img: 'бр5.png' },
-    { id: 'btn6',    x: 165, y: 474, w: 84, h: 84, img: 'бр6.png' },
-    { id: 'btn7',    x: -4,  y: 515, w: 84, h: 84, img: 'бр7.png' },
-    { id: 'btn8',    x: 80,  y: 515, w: 84, h: 84, img: 'бр8.png' },
-    { id: 'btn9',    x: 164, y: 515, w: 84, h: 84, img: 'бр9.png' },
-    { id: 'btnStar', x: -5,  y: 556, w: 84, h: 84, img: 'бр10.png' },
-    { id: 'btn0',    x: 78,  y: 556, w: 84, h: 84, img: 'бр11.png' },
-    { id: 'btnHash', x: 165, y: 556, w: 84, h: 84, img: 'бр12.png' }
-  ];
-  // Кнопки бр1..бр12 (в порядке из BUTTONS) также переключают внешний вид брелока
-  const KEYCHAIN_BUTTON_IDS = ['btn1','btn2','btn3','btn4','btn5','btn6','btn7','btn8','btn9','btnStar','btn0','btnHash'];
-
-  const screenWrapper = document.querySelector('.screen-wrapper');
-  BUTTONS.forEach(b => {
-    const el = document.createElement('div');
-    el.className = 'phone-button';
-    el.id = b.id;
-    el.style.setProperty('--x', b.x + 'px');
-    el.style.setProperty('--y', b.y + 'px');
-    el.style.setProperty('--width', b.w + 'px');
-    el.style.setProperty('--height', b.h + 'px');
-    el.style.setProperty('--img', `url('телефон/${b.img}')`);
-    const kcIndex = KEYCHAIN_BUTTON_IDS.indexOf(b.id);
-    el.addEventListener('click', () => {
-      console.log(`Нажата кнопка: ${b.id}`);
-      if (kcIndex !== -1) window.dispatchEvent(new CustomEvent('keychain-variant', { detail: kcIndex }));
-    });
-    screenWrapper.appendChild(el);
-  });
-
-  const canvas = document.getElementById('mockupCanvas');
-  const ctx = canvas.getContext('2d');
-  const RENDER_SCALE = 3; 
-
-  // Константы разметки
-  const BEZEL_RADIUS = 14;
-  const BEZEL_PAD = 10;
-  const STATUS_H = 18, CARRIER_H = 20, TITLE_H = 30, SOFT_H = 20;
-  const BODY_PAD_TOP = 9, BODY_PAD_BOTTOM = 10, BODY_PAD_X = 8;
-  const BODY_FONT_SIZE = 12.5, BODY_LINE_HEIGHT = 23;
-
-  // Переменные состояния прокрутки
-  let textScrollY = 0;
-  let maxScrollY = 0;
-
-  // Функция расчета текущих границ экрана для обработки событий мыши
-  function getScreenBounds() {
-    const screenW = config.screenWidth;
-    const bodyH = config.bodyHeight;
-    const totalH = STATUS_H + CARRIER_H + TITLE_H + bodyH + SOFT_H;
-    const minX = BEZEL_PAD;
-    const maxX = minX + screenW;
-    const minY = BEZEL_PAD;
-    const maxY = minY + totalH;
-    return { minX, maxX, minY, maxY, totalH };
-  }
-
-  // Вспомогательные функции отрисовки
-  function shade(hex, amt){
-    const c = hex.replace('#','');
-    const n = parseInt(c.length===3 ? c.split('').map(ch=>ch+ch).join('') : c, 16);
-    let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
-    r=Math.round(r*(1-amt)); g=Math.round(g*(1-amt)); b=Math.round(b*(1-amt));
-    return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
-  }
-
-  function roundRectPath(c, x, y, w, h, r){
-    c.beginPath();
-    c.moveTo(x+r, y);
-    c.arcTo(x+w, y, x+w, y+h, r);
-    c.arcTo(x+w, y+h, x, y+h, r);
-    c.arcTo(x, y+h, x, y, r);
-    c.arcTo(x, y, x+w, y, r);
-    c.closePath();
-  }
-
-  function wrapText(c, text, maxWidth){
-    const paragraphs = text.split('\n');
-    const lines = [];
-    for (const para of paragraphs){
-      if (para.length === 0){ lines.push(''); continue; }
-      let line = '';
-      for (const ch of para){
-        const test = line + ch;
-        if (c.measureText(test).width > maxWidth && line.length > 0){
-          lines.push(line);
-          line = ch;
-        } else {
-          line = test;
-        }
-      }
-      lines.push(line);
-    }
-    return lines;
-  }
-
-  function truncateToWidth(c, text, maxWidth){
-    if (c.measureText(text).width <= maxWidth) return text;
-    let t = text;
-    while (t.length > 0 && c.measureText(t + '…').width > maxWidth){ t = t.slice(0, -1); }
-    return t + '…';
-  }
-
-  function paintLcdEffect(c, w, h, intensity){
-    c.save();
-    c.fillStyle = `rgba(0,0,0,${0.18*intensity})`;
-    for(let sy = 0; sy < h; sy += 2){ c.fillRect(0, sy, w, 1); }
-    c.fillStyle = `rgba(0,0,0,${0.07*intensity})`;
-    for(let sx = 0; sx < w; sx += 2){ c.fillRect(sx, 0, 1, h); }
-    const glare = c.createLinearGradient(0, 0, w*0.6, h*0.4);
-    glare.addColorStop(0,    `rgba(255,255,255,${0.14*intensity})`);
-    glare.addColorStop(0.25, `rgba(255,255,255,${0.05*intensity})`);
-    glare.addColorStop(0.5,  `rgba(255,255,255,0)`);
-    glare.addColorStop(1,    `rgba(255,255,255,0)`);
-    c.fillStyle = glare;
-    c.fillRect(0, 0, w, h);
-    const cx = w/2, cy = h/2;
-    const maxR = Math.sqrt(cx*cx + cy*cy);
-    const vig = c.createRadialGradient(cx, cy, maxR*0.55, cx, cy, maxR);
-    vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, `rgba(0,0,0,${0.45*intensity})`);
-    c.fillStyle = vig;
-    c.fillRect(0, 0, w, h);
-    c.restore();
-  }
-
-  function drawStatusIcons(c, x, y, fg, signalLevel, batteryLevel){
-    c.save();
-    const barSpecs = [
-      {dx:0, h:3, dy:7}, {dx:3, h:5, dy:5}, {dx:6, h:7, dy:3}, {dx:9, h:10, dy:0}
-    ];
-    barSpecs.forEach((b, i) => {
-      c.fillStyle = i < signalLevel ? fg : 'rgba(128,128,128,0.35)';
-      c.fillRect(x+b.dx, y+b.dy, 2, b.h);
-    });
-    c.strokeStyle = fg;
-    c.lineWidth = 1;
-    roundRectPath(c, x+17, y+1, 16, 8, 1);
-    c.stroke();
-    const fillW = Math.max(0, Math.min(1, batteryLevel/100)) * 10;
-    if (fillW > 0.3){
-      c.fillStyle = batteryLevel <= 15 ? '#d9463a' : fg;
-      c.fillRect(x+18.5, y+2.5, fillW, 5);
-    }
-    c.fillStyle = fg;
-    c.fillRect(x+34, y+3.5, 1.5, 3);
-    c.restore();
-  }
-
-  function render(){
-    const SCREEN_W = config.screenWidth;
-    const BODY_FIXED_H = config.bodyHeight;
-    const bounds = getScreenBounds();
-
-    const activePage = config.pages[config.currentPage] || { title: "", bodyText: "" };
-    const pageString = `(${config.currentPage + 1}/${config.pages.length})`;
-
-    const statusBg = shade(config.bg, 0.15);
-    const statusBorder = shade(config.bg, 0.35);
-    const softBg = shade(config.bg, 0.22);
-    const softBorder = shade(config.bg, 0.40);
-
-    ctx.font = `${BODY_FONT_SIZE}px ${config.fontStack}`;
-    
-    // Вычисляем строки и высоту текста
-    const lines = wrapText(ctx, activePage.bodyText, SCREEN_W - BODY_PAD_X*2);
-    const textH = lines.length * BODY_LINE_HEIGHT;
-    
-    // Рассчитываем максимальный скролл
-    const visibleTextHeight = BODY_FIXED_H - BODY_PAD_TOP - BODY_PAD_BOTTOM;
-    maxScrollY = Math.max(0, textH - visibleTextHeight);
-    textScrollY = Math.max(0, Math.min(textScrollY, maxScrollY));
-
-    const bezelW = SCREEN_W + BEZEL_PAD*2;
-    const bezelH = BEZEL_PAD*2 + bounds.totalH;
-    const totalW = bezelW;
-    const totalH = bezelH;
-
-    canvas.width = totalW * RENDER_SCALE;
-    canvas.height = totalH * RENDER_SCALE;
-    canvas.style.width = totalW + 'px';
-    canvas.style.height = totalH + 'px';
-    ctx.setTransform(RENDER_SCALE, 0, 0, RENDER_SCALE, 0, 0);
-    ctx.clearRect(0, 0, totalW, totalH);
-
-    const sx = BEZEL_PAD, sy = BEZEL_PAD;
-    let rowY = sy;
-
-    // Статус-бар
-    ctx.fillStyle = statusBg;
-    ctx.fillRect(sx, rowY, SCREEN_W, STATUS_H);
-    ctx.strokeStyle = statusBorder;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(sx, rowY+STATUS_H-0.5); ctx.lineTo(sx+SCREEN_W, rowY+STATUS_H-0.5); ctx.stroke();
-    ctx.fillStyle = config.fg;
-    ctx.font = `9px ${config.fontStack}`;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    ctx.fillText(config.clock, sx+6, rowY + STATUS_H/2 + 1);
-    drawStatusIcons(ctx, sx + SCREEN_W - 6 - 36, rowY + (STATUS_H-10)/2, config.fg, config.signalLevel, config.batteryLevel);
-    rowY += STATUS_H;
-
-    // Оператор
-    ctx.fillStyle = config.bg;
-    ctx.fillRect(sx, rowY, SCREEN_W, CARRIER_H);
-    ctx.fillStyle = config.fg;
-    ctx.font = `bold 10px ${config.fontStack}`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(config.carrier, sx+6, rowY + CARRIER_H/2 + 1);
-    rowY += CARRIER_H;
-
-    // Заголовок
-    ctx.fillStyle = config.titleBg;
-    ctx.fillRect(sx, rowY, SCREEN_W, TITLE_H);
-    const badgeX = sx+7, badgeY = rowY + (TITLE_H-16)/2, badgeW = 18, badgeH = 16;
-    ctx.fillStyle = config.titleFg;
-    roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 2);
-    ctx.fill();
-    ctx.fillStyle = config.titleBg;
-    ctx.font = `bold 10px ${config.fontStack}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('B', badgeX+badgeW/2, badgeY+badgeH/2+1);
-
-    ctx.font = `bold 12px ${config.fontStack}`;
-    ctx.textAlign = 'right';
-    ctx.fillStyle = config.titleFg;
-    const pageX = sx + SCREEN_W - 7;
-    ctx.font = `10px ${config.fontStack}`;
-    ctx.globalAlpha = 0.85;
-    ctx.fillText(pageString, pageX, rowY + TITLE_H/2 + 1);
-    ctx.globalAlpha = 1;
-    const pageW = ctx.measureText(pageString).width;
-
-    ctx.font = `bold 12px ${config.fontStack}`;
-    ctx.textAlign = 'left';
-    const titleX = badgeX + badgeW + 6;
-    const titleMaxW = (pageX - pageW - 8) - titleX;
-    const titleShown = truncateToWidth(ctx, activePage.title, Math.max(10, titleMaxW));
-    ctx.fillText(titleShown, titleX, rowY + TITLE_H/2 + 1);
-    rowY += TITLE_H;
-
-    // Отрисовка тела экрана с обрезкой
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(sx, rowY, SCREEN_W, BODY_FIXED_H);
-    ctx.clip(); 
-
-    ctx.fillStyle = config.bg;
-    ctx.fillRect(sx, rowY, SCREEN_W, BODY_FIXED_H);
-    
-    ctx.fillStyle = config.fg;
-    ctx.font = `${BODY_FONT_SIZE}px ${config.fontStack}`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-    
-    let ly = rowY + BODY_PAD_TOP + BODY_FONT_SIZE - textScrollY;
-    
-    for (const line of lines){
-      if (ly > rowY - BODY_LINE_HEIGHT && ly < rowY + BODY_FIXED_H + BODY_LINE_HEIGHT) {
-        ctx.fillText(line, sx + BODY_PAD_X, ly);
-      }
-      ly += BODY_LINE_HEIGHT;
-    }
-    
-    ctx.restore(); 
-
-    rowY += BODY_FIXED_H;
-
-    // Софт-клавиши
-    ctx.fillStyle = softBg;
-    ctx.fillRect(sx, rowY, SCREEN_W, SOFT_H);
-    ctx.strokeStyle = softBorder;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(sx, rowY+0.5); ctx.lineTo(sx+SCREEN_W, rowY+0.5); ctx.stroke();
-
-    ctx.font = `9.5px ${config.fontStack}`;
-    ctx.textBaseline = 'middle';
-    const keyY = rowY + SOFT_H/2;
-    
-    ctx.fillStyle = config.fg;
-    roundRectPath(ctx, sx+6, keyY-5.5, 11, 11, 2);
-    ctx.fill();
-    ctx.fillStyle = config.bg;
-    ctx.font = `8px ${config.fontStack}`;
-    ctx.textAlign = 'center';
-    ctx.fillText('◀', sx+6+5.5, keyY+1);
-    ctx.fillStyle = config.fg;
-    ctx.font = `9.5px ${config.fontStack}`;
-    ctx.textAlign = 'left';
-    ctx.fillText(config.softLeft, sx+6+11+3, keyY+1);
-    
-    ctx.textAlign = 'center';
-    ctx.fillText(config.softRight, sx+SCREEN_W/2, keyY+1);
-    
-    ctx.fillStyle = config.fg;
-    roundRectPath(ctx, sx+SCREEN_W-6-11, keyY-5.5, 11, 11, 2);
-    ctx.fill();
-    ctx.fillStyle = config.bg;
-    ctx.font = `8px ${config.fontStack}`;
-    ctx.textAlign = 'center';
-    ctx.fillText('▶', sx+SCREEN_W-6-5.5, keyY+1);
-
-    // Эффект LCD
-    if (config.lcdEffect){
-      ctx.save();
-      ctx.translate(sx, sy);
-      paintLcdEffect(ctx, SCREEN_W, bounds.totalH, config.lcdIntensity);
-      ctx.restore();
-    }
-  }
-
-  // =================================================================
-  // ОБРАБОТЧИКИ СОБЫТИЙ
-  // =================================================================
-
-  const scrollStep = 23; 
-
-  function getMousePos(canvas, evt) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = (canvas.width / RENDER_SCALE) / rect.width;
-    const scaleY = (canvas.height / RENDER_SCALE) / rect.height;
-    return {
-      x: (evt.clientX - rect.left) * scaleX,
-      y: (evt.clientY - rect.top) * scaleY
-    };
-  }
-
-  canvas.addEventListener('mousemove', (e) => {
-    const pos = getMousePos(canvas, e);
-    const bounds = getScreenBounds();
-    
-    if (pos.x >= bounds.minX && pos.x <= bounds.maxX &&
-        pos.y >= bounds.minY && pos.y <= bounds.maxY) {
-      canvas.style.cursor = 'ns-resize';
-    } else {
-      canvas.style.cursor = 'default';
-    }
-  });
-
-  canvas.addEventListener('wheel', (e) => {
-    const pos = getMousePos(canvas, e);
-    const bounds = getScreenBounds();
-    
-    if (pos.x >= bounds.minX && pos.x <= bounds.maxX &&
-        pos.y >= bounds.minY && pos.y <= bounds.maxY) {
-      
-      e.preventDefault();
-      
-      if (e.deltaY > 0) {
-        textScrollY += scrollStep;
-      } else {
-        textScrollY -= scrollStep;
-      }
-      
-      textScrollY = Math.max(0, Math.min(textScrollY, maxScrollY));
-      render(); 
-    }
-  }, { passive: false });
-
-  // Обработчики для кнопок навигации на телефоне
-  document.getElementById('btnNavUp').addEventListener('click', () => {
-    textScrollY -= scrollStep * 3; 
-    textScrollY = Math.max(0, Math.min(textScrollY, maxScrollY));
-    render();
-  });
-
-  document.getElementById('btnNavDown').addEventListener('click', () => {
-    textScrollY += scrollStep * 3; 
-    textScrollY = Math.max(0, Math.min(textScrollY, maxScrollY));
-    render();
-  });
-
-  document.getElementById('btnNavLeft').addEventListener('click', () => {
-    if (config.currentPage > 0) {
-      config.currentPage--;
-      textScrollY = 0;
-      render();
-    }
-  });
-
-  document.getElementById('btnNavRight').addEventListener('click', () => {
-    if (config.currentPage < config.pages.length - 1) {
-      config.currentPage++;
-      textScrollY = 0;
-      render();
-    }
-  });
-
-  // Отрисовка
-  document.fonts.ready.then(() => {
-    render();
-  });
-  
-  render();
-</script>
-
-<script>
-  // =================================================================
-  // БРЕЛОК НА ЦЕПОЧКЕ (физика на верлет-интеграции)
-  // Временные заглушки для сегментов цепочки и самого брелока: центр.png
-  // =================================================================
-  (function () {
-    const kcCanvas = document.getElementById('keychainCanvas');
-    const kctx = kcCanvas.getContext('2d');
-
-    // Внутреннее разрешение холста совпадает с его CSS-размером
-    kcCanvas.width = 700;
-    kcCanvas.height = 900;
-
-    // =================================================================
-    // НАСТРОЙКИ ВНЕШНЕГО ВИДА БРЕЛОКА И ЦЕПОЧКИ
-    // =================================================================
-    const KEYCHAIN_SETTINGS = {
-      // Точка крепления начала цепочки к правой грани телефона
-      // (координаты заданы в той же системе, что и .phone-body: -73/-79, 397x737)
-      anchor: { x: -100 + 397 * 0.97, y: 150 + 737 * 0.06 },
-
-      numSegments: 9,          // сколько жёстко скреплённых сегментов в цепочке
-      segmentLength: 20,       // длина одного сегмента цепочки, px
-      segmentThickness: 13,    // толщина сегмента цепочки при отрисовке, px
-
-      keychainSize: 80         // размер (ширина и высота) самого брелока при отрисовке, px
-    };
-
-    const ANCHOR = KEYCHAIN_SETTINGS.anchor;
-    const NUM_SEGMENTS = KEYCHAIN_SETTINGS.numSegments;
-    const SEGMENT_LENGTH = KEYCHAIN_SETTINGS.segmentLength;
-    const SEGMENT_THICKNESS = KEYCHAIN_SETTINGS.segmentThickness;
-    const KEYCHAIN_SIZE = KEYCHAIN_SETTINGS.keychainSize;
-    const KEYCHAIN_RADIUS = KEYCHAIN_SIZE * 0.42; // радиус коллизии брелока
-    const MOUSE_RADIUS = 13;          // радиус "курсора" для столкновений (в 2 раза меньше)
-
-    const GRAVITY = 0.55;
-    const DAMPING = 0.985;
-    const CONSTRAINT_ITERATIONS = 8;
-
-    // Точки цепочки: points[0] - жёстко закреплённый якорь на корпусе телефона,
-    // points[1..N-1] - соединения сегментов, points[N] - центр брелока.
-    const points = [];
-    for (let i = 0; i <= NUM_SEGMENTS; i++) {
-      points.push({
-        x: ANCHOR.x,
-        y: ANCHOR.y + i * SEGMENT_LENGTH,
-        oldx: ANCHOR.x,
-        oldy: ANCHOR.y + i * SEGMENT_LENGTH,
-        invMass: i === 0 ? 0 : (i === NUM_SEGMENTS ? 0.7 : 1) // брелок чуть "тяжелее"
-      });
-    }
-
-    // Заглушка для сегментов цепочки (позже можно заменить на отдельные PNG для каждого сегмента)
-    const segmentImg = new Image();
-    segmentImg.src = 'цепь.png';
-
-    // 12 вариантов внешнего вида брелока, выбираемые кнопками бр1.png..бр12.png.
-    // Реальные варианты ещё не готовы, поэтому все указывают на ту же заглушку центр.png.
-    const KEYCHAIN_VARIANTS = [
-      'брлк1.png', 'брлк2.png', 'брлк3.png', 'брлк4.png',
-      'брлк5.png', 'брлк6.png', 'брлк7.png', 'брлк8.png',
-      'брлк9.png', 'брлк10.png', 'брлк11.png', 'брлк12.png'
-    ];
-    const keychainImages = KEYCHAIN_VARIANTS.map((src) => {
-      const img = new Image();
-      img.src = src;
-      return img;
-    });
-    let activeVariant = 0;
-
-    const mouse = { x: -9999, y: -9999, active: false };
-
-
-    window.addEventListener('mousemove', (e) => {
-      const rect = kcCanvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-      mouse.active = true;
-    });
-    window.addEventListener('mouseleave', () => { mouse.active = false; });
-
-    function updatePoints() {
-      for (const p of points) {
-        if (p.invMass === 0) continue;
-        const vx = (p.x - p.oldx) * DAMPING;
-        const vy = (p.y - p.oldy) * DAMPING;
-        p.oldx = p.x;
-        p.oldy = p.y;
-        p.x += vx;
-        p.y += vy + GRAVITY;
-      }
-    }
-
-    function satisfyDistanceConstraints() {
-      points[0].x = ANCHOR.x;
-      points[0].y = ANCHOR.y;
-      for (let i = 0; i < points.length - 1; i++) {
-        const a = points[i], b = points[i + 1];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 0.0001) dist = 0.0001;
-        const diff = (dist - SEGMENT_LENGTH) / dist;
-        const totalIM = a.invMass + b.invMass;
-        if (totalIM <= 0) continue;
-        const corrX = dx * diff, corrY = dy * diff;
-        a.x += corrX * (a.invMass / totalIM);
-        a.y += corrY * (a.invMass / totalIM);
-        b.x -= corrX * (b.invMass / totalIM);
-        b.y -= corrY * (b.invMass / totalIM);
-      }
-      points[0].x = ANCHOR.x;
-      points[0].y = ANCHOR.y;
-    }
-
-    // Реалистичное отталкивание брелока от курсора: выталкиваем его за пределы
-    // радиуса курсора и добавляем импульс "отдачи", изменяя предыдущую позицию.
-    function applyMouseCollision() {
-      if (!mouse.active) return;
-      const p = points[NUM_SEGMENTS];
-      const dx = p.x - mouse.x;
-      const dy = p.y - mouse.y;
-      let dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 0.0001) dist = 0.0001;
-      const minDist = KEYCHAIN_RADIUS + MOUSE_RADIUS;
-      if (dist < minDist) {
-        const nx = dx / dist, ny = dy / dist;
-        const push = (minDist - dist);
-        p.x += nx * push;
-        p.y += ny * push;
-        p.oldx -= nx * push * 0.6;
-        p.oldy -= ny * push * 0.6;
-      }
-    }
-
-    function step() {
-      updatePoints();
-      for (let i = 0; i < CONSTRAINT_ITERATIONS; i++) satisfyDistanceConstraints();
-      applyMouseCollision();
-      for (let i = 0; i < 3; i++) satisfyDistanceConstraints();
-      renderKeychain();
-    }
-
-    function renderKeychain() {
-      kctx.clearRect(0, 0, kcCanvas.width, kcCanvas.height);
-
-      // Сегменты цепочки
-      for (let i = 0; i < NUM_SEGMENTS; i++) {
-        const a = points[i], b = points[i + 1];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const len = Math.sqrt(dx * dx + dy * dy) || SEGMENT_LENGTH;
-        const angle = Math.atan2(dy, dx);
-        const midx = (a.x + b.x) / 2, midy = (a.y + b.y) / 2;
-        kctx.save();
-        kctx.translate(midx, midy);
-        kctx.rotate(angle);
-        kctx.drawImage(segmentImg, -len / 2, -SEGMENT_THICKNESS / 2, len, SEGMENT_THICKNESS);
-        kctx.restore();
-      }
-
-      // Сам брелок на конце цепочки
-      const last = points[NUM_SEGMENTS];
-      const prev = points[NUM_SEGMENTS - 1];
-      const swingAngle = Math.atan2(last.y - prev.y, last.x - prev.x) - Math.PI / 2;
-      kctx.save();
-      kctx.translate(last.x, last.y);
-      kctx.rotate(swingAngle);
-      kctx.drawImage(keychainImages[activeVariant], -KEYCHAIN_SIZE / 2, -KEYCHAIN_SIZE / 2, KEYCHAIN_SIZE, KEYCHAIN_SIZE);
-      kctx.restore();
-    }
-
-    // Кнопки бр1.png..бр12.png (события посылаются кнопками из основного скрипта) переключают вид брелока
-    window.addEventListener('keychain-variant', (e) => { activeVariant = e.detail; });
-
-    Promise.all([
-      new Promise((res) => { segmentImg.onload = res; segmentImg.onerror = res; }),
-      ...keychainImages.map((img) => new Promise((res) => { img.onload = res; img.onerror = res; }))
-    ]).then(() => {
-      // setInterval вместо requestAnimationFrame, чтобы анимация не замирала,
-      // когда вкладка/предпросмотр считаются невидимыми браузером.
-      setInterval(step, 16);
-    });
-  })();
-</script>
+	<main class="page-shell">
+		<div class="status-line" aria-label="статус системы">
+			<span>[sys.note] архив подключён</span>
+			<span>узел: 01 / 12</span>
+		</div>
+
+		<button class="menu-trigger" id="menuOpen" type="button" aria-expanded="false" aria-controls="siteMenu">
+			[ открыть меню ]
+		</button>
+
+		<h1>видеоархив</h1>
+		<p class="intro">раздел индексирован. выберите заголовок в меню: подзаголовки раскрываются при наведении, фокусе или нажатии.</p>
+
+		<section class="archive-block" id="video" aria-labelledby="archiveTitle">
+			<h2 id="archiveTitle">// memlog: содержимое</h2>
+			<p>[ожидание данных] сюда можно добавить записи видеоархива, ссылки на файлы или список материалов.</p>
+		</section>
+
+		<a class="home-link" href="index.html">← возврат на главную</a>
+	</main>
+
+	<button class="menu-backdrop" id="menuBackdrop" type="button" aria-label="закрыть меню" hidden></button>
+
+	<nav class="menu-panel" id="siteMenu" aria-label="главное меню" aria-hidden="true" hidden>
+		<div class="menu-topline">
+			<span>[ nav.sys ] индекс разделов</span>
+			<button class="menu-close" id="menuClose" type="button">[ x ]</button>
+		</div>
+
+		<div class="menu-group">
+			<button class="menu-heading" type="button" aria-expanded="false">медиаархив</button>
+			<ul class="submenu">
+				<li><a href="page1.html">видеоархив</a></li>
+				<li><a href="page2.html">плейлист</a></li>
+			</ul>
+		</div>
+
+		<div class="menu-group">
+			<button class="menu-heading" type="button" aria-expanded="false">коллекции</button>
+			<ul class="submenu">
+				<li><a href="page3.html">игры — 99 в 1</a></li>
+				<li><a href="page4.html">фототека</a></li>
+				<li><a href="page7.html">библиотека</a></li>
+			</ul>
+		</div>
+
+		<div class="menu-group">
+			<button class="menu-heading" type="button" aria-expanded="false">личные файлы</button>
+			<ul class="submenu">
+				<li><a href="page5.html">досье</a></li>
+				<li><a href="page6.html">блокнот</a></li>
+			</ul>
+		</div>
+
+		<p class="menu-note">[ status ] подпункты загружены</p>
+	</nav>
+
+	<script>
+		const menu = document.getElementById('siteMenu');
+		const openButton = document.getElementById('menuOpen');
+		const closeButton = document.getElementById('menuClose');
+		const backdrop = document.getElementById('menuBackdrop');
+		const menuGroups = document.querySelectorAll('.menu-group');
+
+		function setMenuOpen(isOpen) {
+			menu.hidden = !isOpen;
+			backdrop.hidden = !isOpen;
+			menu.setAttribute('aria-hidden', String(!isOpen));
+			openButton.setAttribute('aria-expanded', String(isOpen));
+
+			if (isOpen) {
+				closeButton.focus();
+				console.log('// меню открыто: индекс доступен');
+			} else {
+				openButton.focus();
+				console.log('// меню закрыто: возврат к странице');
+			}
+		}
+
+		openButton.addEventListener('click', () => setMenuOpen(true));
+		closeButton.addEventListener('click', () => setMenuOpen(false));
+		backdrop.addEventListener('click', () => setMenuOpen(false));
+
+		menuGroups.forEach((group) => {
+			const heading = group.querySelector('.menu-heading');
+			heading.addEventListener('click', () => {
+				const isOpen = group.classList.toggle('is-open');
+				heading.setAttribute('aria-expanded', String(isOpen));
+			});
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && !menu.hidden) setMenuOpen(false);
+		});
+	</script>
 </body>
 </html>
