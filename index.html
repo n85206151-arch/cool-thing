@@ -146,6 +146,10 @@
           transition: object-position .25s steps(4, end);
         }
 
+        .hero-gif .camera-feed.is-resetting-pan {
+          transition: none;
+        }
+
         .camera-corners {
           --corner-size: 52px;
           --corner-weight: 2px;
@@ -309,20 +313,20 @@
         .camera-switch-control {
           position: absolute;
           z-index: 3;
-          bottom: 1%;
+          bottom: 5%;
           left: 50%;
           transform: translateX(-50%);
         }
 
         .camera-switch-button {
-          min-width: 126px;
-          height: 30px;
-          padding: 0 10px;
+          min-width: 156px;
+          height: 36px;
+          padding: 0 12px;
           border: 1px solid rgba(255, 173, 66, .72);
           border-radius: 0;
           background: rgba(0, 0, 0, .42);
           color: #ffad42;
-          font: 700 10px/1 "Lucida Console", Monaco, Consolas, "Courier New", monospace;
+          font: 700 13px/1 "Lucida Console", Monaco, Consolas, "Courier New", monospace;
           letter-spacing: .02em;
           text-transform: uppercase;
           cursor: pointer;
@@ -382,14 +386,14 @@
 
         .mute-indicator {
           display: inline-flex;
-          width: 21px;
-          height: 21px;
+          width: 27px;
+          height: 27px;
           align-items: center;
           justify-content: center;
           color: #ffad42;
         }
 
-        .mute-indicator svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: square; stroke-linejoin: miter; stroke-width: 1.9; }
+        .mute-indicator svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-linecap: square; stroke-linejoin: miter; stroke-width: 1.9; }
         .mute-indicator .sound-waves { display: none; }
         .camera-audio.is-playing .mute-indicator .sound-waves { display: block; }
         .camera-audio.is-playing .mute-indicator .mute-slash { display: none; }
@@ -1569,7 +1573,10 @@
           });
 
           cameraPan = 50;
+          cameraFeed.classList.add('is-resetting-pan');
           cameraFeed.style.setProperty('--camera-pan', '50%');
+          cameraFeed.getBoundingClientRect();
+          window.requestAnimationFrame(() => cameraFeed.classList.remove('is-resetting-pan'));
 
           cameraRain.pause();
           cameraRain.currentTime = 0;
