@@ -141,7 +141,9 @@
           width: 100%;
           height: 100%;
           object-fit: cover;
+          object-position: var(--camera-pan, 50%) center;
           filter: none;
+          transition: object-position .25s steps(4, end);
         }
 
         .camera-corners {
@@ -187,8 +189,8 @@
         }
 
         .camera-rec {
-          top: 11%;
-          left: 11%;
+          top: 8%;
+          left: 8%;
           color: rgba(204, 42, 37, .8);
           font-size: 13px;
           animation: rec-blink 1s steps(2, start) infinite;
@@ -207,8 +209,8 @@
         @keyframes rec-blink { to { visibility: hidden; } }
 
         .camera-location {
-          top: 11%;
-          right: 11%;
+          top: 8%;
+          right: 8%;
           display: block;
           text-align: right;
           font-size: 11px;
@@ -227,8 +229,8 @@
         .camera-location span { color: #ffe0b0; }
 
         .camera-clock {
-          right: 11%;
-          bottom: 11%;
+          right: 8%;
+          bottom: 8%;
           display: block;
           text-align: right;
           font-variant-numeric: tabular-nums;
@@ -256,9 +258,52 @@
         }
 
         .camera-audio {
-          left: 11%;
-          bottom: 11%;
+          left: 8%;
+          bottom: 8%;
           gap: 6px;
+        }
+
+        .camera-pan-controls {
+          position: absolute;
+          z-index: 3;
+          top: 5%;
+          left: 50%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          transform: translateX(-50%);
+        }
+
+        .camera-pan-button {
+          display: grid;
+          width: 30px;
+          height: 30px;
+          place-items: center;
+          padding: 0;
+          border: 1px solid rgba(255, 173, 66, .72);
+          border-radius: 0;
+          background: rgba(0, 0, 0, .42);
+          color: #ffad42;
+          cursor: pointer;
+        }
+
+        .camera-pan-button:hover,
+        .camera-pan-button:focus-visible {
+          outline: none;
+          background: #ffad42;
+          color: #111;
+        }
+
+        .camera-pan-button:active { transform: translateY(1px); }
+
+        .camera-pan-button svg {
+          width: 17px;
+          height: 17px;
+          fill: none;
+          stroke: currentColor;
+          stroke-linecap: square;
+          stroke-linejoin: miter;
+          stroke-width: 2;
         }
 
         .volume-control {
@@ -617,6 +662,14 @@
           <source src="камера.webm" type="video/webm">
         </video>
         <span class="camera-corners" aria-hidden="true"></span>
+        <div class="camera-pan-controls" aria-label="поворот камеры">
+          <button class="camera-pan-button" id="cameraPanLeft" type="button" aria-label="повернуть камеру влево" title="повернуть влево">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h11"></path></svg>
+          </button>
+          <button class="camera-pan-button" id="cameraPanRight" type="button" aria-label="повернуть камеру вправо" title="повернуть вправо">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7m7-7H6"></path></svg>
+          </button>
+        </div>
         <figcaption class="camera-hud camera-rec" aria-label="запись ведётся">rec</figcaption>
         <div class="camera-hud camera-location">
           <strong>камера 04 // вход b</strong>
@@ -1433,11 +1486,23 @@
         const cameraAudioControl = document.getElementById('cameraAudioControl');
         const muteIndicator = document.getElementById('muteIndicator');
         const volumeBars = document.querySelectorAll('.volume-bars span');
+        const cameraFeed = document.querySelector('.camera-feed');
+        const cameraPanStep = 12;
+        let cameraPan = 50;
         let rainAudioContext = null;
         let rainBuffer = null;
         let rainGain = null;
         let rainSource = null;
         let rainUsesWebAudio = false;
+
+        function panCamera(direction) {
+          cameraPan = Math.max(0, Math.min(100, cameraPan + direction * cameraPanStep));
+          cameraFeed.style.setProperty('--camera-pan', `${cameraPan}%`);
+          console.log(`// camera pan: ${cameraPan}%`);
+        }
+
+        document.getElementById('cameraPanLeft').addEventListener('click', () => panCamera(-1));
+        document.getElementById('cameraPanRight').addEventListener('click', () => panCamera(1));
 
         function updateMoscowClock() {
           const now = new Date();
