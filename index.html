@@ -306,6 +306,37 @@
           stroke-width: 2;
         }
 
+        .camera-switch-control {
+          position: absolute;
+          z-index: 3;
+          bottom: 1%;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .camera-switch-button {
+          min-width: 126px;
+          height: 30px;
+          padding: 0 10px;
+          border: 1px solid rgba(255, 173, 66, .72);
+          border-radius: 0;
+          background: rgba(0, 0, 0, .42);
+          color: #ffad42;
+          font: 700 10px/1 "Lucida Console", Monaco, Consolas, "Courier New", monospace;
+          letter-spacing: .02em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+
+        .camera-switch-button:hover,
+        .camera-switch-button:focus-visible {
+          outline: none;
+          background: #ffad42;
+          color: #111;
+        }
+
+        .camera-switch-button:active { transform: translateY(1px); }
+
         .volume-control {
           position: relative;
           width: 136px;
@@ -659,7 +690,7 @@
       <div class="hero-empty" aria-hidden="true"></div>
       <figure class="hero-gif">
         <video class="camera-feed" autoplay muted loop playsinline preload="metadata" aria-label="видеопоток камеры наблюдения">
-          <source src="камера.webm" type="video/webm">
+          <source id="cameraVideoSource" src="камера.webm" type="video/webm">
         </video>
         <span class="camera-corners" aria-hidden="true"></span>
         <div class="camera-pan-controls" aria-label="поворот камеры">
@@ -670,10 +701,13 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7m7-7H6"></path></svg>
           </button>
         </div>
+        <div class="camera-switch-control">
+          <button class="camera-switch-button" id="cameraSwitch" type="button">переключить</button>
+        </div>
         <figcaption class="camera-hud camera-rec" aria-label="запись ведётся">rec</figcaption>
         <div class="camera-hud camera-location">
-          <strong>камера 04 // вход b</strong>
-          <span>москва / центр</span>
+          <strong id="cameraName">камера 01 // вход b</strong>
+          <span id="cameraLocation">москва / центр</span>
         </div>
         <div class="camera-hud camera-audio" id="cameraAudioControl">
           <label class="volume-control" for="cameraVolume">
@@ -692,10 +726,10 @@
             </svg>
           </span>
         </div>
-        <div class="camera-hud camera-clock" aria-label="московское время">
-          <strong id="cameraTime">--:--:-- мск</strong>
+        <div class="camera-hud camera-clock" id="cameraClock" aria-label="часы камеры">
+          <strong id="cameraTime">--:--:--</strong>
           <span id="cameraDate">--.--.----</span>
-          <span>live // utc+3</span>
+          <span id="cameraZone">live // utc+3</span>
         </div>
         <audio id="cameraRain" src="rain.wav" loop preload="metadata"></audio>
       </figure>
@@ -1481,12 +1515,26 @@
       <script>
         const cameraTime = document.getElementById('cameraTime');
         const cameraDate = document.getElementById('cameraDate');
+        const cameraZone = document.getElementById('cameraZone');
+        const cameraClock = document.getElementById('cameraClock');
+        const cameraName = document.getElementById('cameraName');
+        const cameraLocation = document.getElementById('cameraLocation');
         const cameraVolume = document.getElementById('cameraVolume');
         const cameraRain = document.getElementById('cameraRain');
         const cameraAudioControl = document.getElementById('cameraAudioControl');
         const muteIndicator = document.getElementById('muteIndicator');
         const volumeBars = document.querySelectorAll('.volume-bars span');
         const cameraFeed = document.querySelector('.camera-feed');
+        const cameraVideoSource = document.getElementById('cameraVideoSource');
+        const cameraList = [
+          { name: 'камера 01 // вход b', location: 'москва / центр', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера.webm', audio: 'rain.wav' },
+          { name: 'камера 02 // вокзал', location: 'калининград / западный вход', timeZone: 'Europe/Kaliningrad', zoneLabel: 'utc+2', video: 'камера02.webm', audio: 'rain02.wav' },
+          { name: 'камера 03 // проспект', location: 'екатеринбург / центр', timeZone: 'Asia/Yekaterinburg', zoneLabel: 'utc+5', video: 'камера03.webm', audio: 'rain03.wav' },
+          { name: 'камера 04 // площадь', location: 'новосибирск / площадь', timeZone: 'Asia/Novosibirsk', zoneLabel: 'utc+7', video: 'камера04.webm', audio: 'rain04.wav' },
+          { name: 'камера 05 // порт', location: 'владивосток / порт', timeZone: 'Asia/Vladivostok', zoneLabel: 'utc+10', video: 'камера05.webm', audio: 'rain05.wav' },
+          { name: 'камера 06 // причал', location: 'камчатка / петропавловск', timeZone: 'Asia/Kamchatka', zoneLabel: 'utc+12', video: 'камера06.webm', audio: 'rain06.wav' }
+        ];
+        let activeCameraIndex = 0;
         const cameraPanStep = 12;
         let cameraPan = 50;
         let rainAudioContext = null;
@@ -1504,20 +1552,59 @@
         document.getElementById('cameraPanLeft').addEventListener('click', () => panCamera(-1));
         document.getElementById('cameraPanRight').addEventListener('click', () => panCamera(1));
 
-        function updateMoscowClock() {
+        async function switchCamera() {
+          activeCameraIndex = (activeCameraIndex + 1) % cameraList.length;
+          const camera = cameraList[activeCameraIndex];
+          const wasAudioEnabled = Number(cameraVolume.value) > 0;
+
+          cameraName.textContent = camera.name;
+          cameraLocation.textContent = camera.location;
+          cameraClock.setAttribute('aria-label', `часы камеры: ${camera.location}`);
+          cameraFeed.setAttribute('aria-label', `видеопоток: ${camera.location}`);
+
+          cameraVideoSource.src = camera.video;
+          cameraFeed.load();
+          cameraFeed.play().catch(() => {
+            console.log(`// видеопоток ожидает загрузки: ${camera.video}`);
+          });
+
+          cameraPan = 50;
+          cameraFeed.style.setProperty('--camera-pan', '50%');
+
+          cameraRain.pause();
+          cameraRain.currentTime = 0;
+          if (rainSource) {
+            try { rainSource.stop(); } catch (error) { /* источник уже остановлен */ }
+            rainSource.disconnect();
+            rainSource = null;
+          }
+          rainBuffer = null;
+          cameraRain.src = camera.audio;
+          cameraRain.load();
+
+          updateCameraClock();
+          if (wasAudioEnabled) await updateCameraVolume();
+          console.log(`// camera switched: ${camera.name}`);
+        }
+
+        document.getElementById('cameraSwitch').addEventListener('click', switchCamera);
+
+        function updateCameraClock() {
+          const camera = cameraList[activeCameraIndex];
           const now = new Date();
           const clock = new Intl.DateTimeFormat('ru-RU', {
-            timeZone: 'Europe/Moscow',
+            timeZone: camera.timeZone,
             hour: '2-digit', minute: '2-digit', second: '2-digit',
             hourCycle: 'h23'
           }).format(now);
           const date = new Intl.DateTimeFormat('ru-RU', {
-            timeZone: 'Europe/Moscow',
+            timeZone: camera.timeZone,
             day: '2-digit', month: '2-digit', year: 'numeric'
           }).format(now);
 
-          cameraTime.textContent = `${clock} мск`;
+          cameraTime.textContent = clock;
           cameraDate.textContent = date;
+          cameraZone.textContent = `live // ${camera.zoneLabel}`;
         }
 
         async function updateCameraVolume() {
@@ -1572,7 +1659,7 @@
               cameraAudioControl.classList.remove('is-playing');
               muteIndicator.setAttribute('aria-label', 'аудиофайл недоступен');
               cameraVolume.setAttribute('aria-valuetext', `${level * 10}%; аудио недоступно`);
-              console.log('// ошибка чтения rain.wav', fallbackError);
+              console.log(`// ошибка чтения ${cameraList[activeCameraIndex].audio}`, fallbackError);
             }
           }
         }
@@ -1590,8 +1677,9 @@
           await rainAudioContext.resume();
 
           if (!rainBuffer) {
-            const response = await fetch('rain.wav');
-            if (!response.ok) throw new Error(`rain.wav: HTTP ${response.status}`);
+            const audioFile = cameraList[activeCameraIndex].audio;
+            const response = await fetch(audioFile);
+            if (!response.ok) throw new Error(`${audioFile}: HTTP ${response.status}`);
             rainBuffer = await rainAudioContext.decodeAudioData(await response.arrayBuffer());
           }
 
@@ -1614,8 +1702,8 @@
           muteIndicator.setAttribute('aria-label', 'звук включён');
         }
 
-        updateMoscowClock();
-        window.setInterval(updateMoscowClock, 1000);
+        updateCameraClock();
+        window.setInterval(updateCameraClock, 1000);
         cameraRain.volume = 0;
         cameraRain.muted = true;
         cameraVolume.addEventListener('input', updateCameraVolume);
