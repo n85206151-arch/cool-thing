@@ -241,6 +241,8 @@
           line-height: 1.15;
         }
 
+        .camera-clock.is-unknown span { display: none; }
+
         .camera-clock strong {
           margin-bottom: 3px;
           font: 700 26px/1 "Lucida Console", Monaco, Consolas, "Courier New", monospace;
@@ -1533,7 +1535,7 @@
         const cameraList = [
           { name: 'камера 002 // мост', location: 'Нижний Ист-Сайд / Манхэттен', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера.webm', audio: 'rain.wav' },
           { name: 'камера 027 // шоссе', location: 'Небо / Великобритания', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера02.webm', audio: 'rain02.wav' },
-          { name: 'камера ??? // забытый сон', location: '??? / ???', timeZone: '--:--:--', zoneLabel: '--', video: 'камера03.webm', audio: 'rain03.wav' },
+          { name: 'камера ??? // забытый сон', location: '', timeZone: null, zoneLabel: '--', randomLocation: true, staticClock: true, video: 'камера03.webm', audio: 'rain03.wav' },
           { name: 'камера 04 // площадь', location: 'новосибирск / площадь', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера04.webm', audio: 'rain04.wav' },
           { name: 'камера 05 // порт', location: 'владивосток / порт', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера05.webm', audio: 'rain05.wav' },
           { name: 'камера 06 // причал', location: 'камчатка / петропавловск', timeZone: 'Europe/Moscow', zoneLabel: 'utc+3', video: 'камера06.webm', audio: 'rain06.wav' }
@@ -1546,6 +1548,7 @@
         let rainGain = null;
         let rainSource = null;
         let rainUsesWebAudio = false;
+        const randomLocationGlyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&*+-=[]{}<>?/\\';
 
         function panCamera(direction) {
           cameraPan = Math.max(0, Math.min(100, cameraPan + direction * cameraPanStep));
@@ -1560,11 +1563,13 @@
           activeCameraIndex = (activeCameraIndex + 1) % cameraList.length;
           const camera = cameraList[activeCameraIndex];
           const wasAudioEnabled = Number(cameraVolume.value) > 0;
+          const cameraDescription = camera.randomLocation ? 'неизвестное местоположение' : camera.location;
 
           cameraName.textContent = camera.name;
-          cameraLocation.textContent = camera.location;
-          cameraClock.setAttribute('aria-label', `часы камеры: ${camera.location}`);
-          cameraFeed.setAttribute('aria-label', `видеопоток: ${camera.location}`);
+          updateCameraLocation();
+          cameraClock.setAttribute('aria-label', `часы камеры: ${cameraDescription}`);
+          cameraClock.classList.toggle('is-unknown', Boolean(camera.staticClock));
+          cameraFeed.setAttribute('aria-label', `видеопоток: ${cameraDescription}`);
 
           cameraVideoSource.src = camera.video;
           cameraFeed.load();
@@ -1598,6 +1603,13 @@
 
         function updateCameraClock() {
           const camera = cameraList[activeCameraIndex];
+          if (camera.staticClock) {
+            cameraTime.textContent = '--:--:--';
+            cameraDate.textContent = '--.--.----';
+            cameraZone.textContent = 'live // --';
+            return;
+          }
+
           const now = new Date();
           const clock = new Intl.DateTimeFormat('ru-RU', {
             timeZone: camera.timeZone,
@@ -1612,6 +1624,19 @@
           cameraTime.textContent = clock;
           cameraDate.textContent = date;
           cameraZone.textContent = `live // ${camera.zoneLabel}`;
+        }
+
+        function updateCameraLocation() {
+          const camera = cameraList[activeCameraIndex];
+          if (!camera.randomLocation) {
+            cameraLocation.textContent = camera.location;
+            return;
+          }
+
+          const length = 22;
+          cameraLocation.textContent = Array.from({ length }, () =>
+            randomLocationGlyphs[Math.floor(Math.random() * randomLocationGlyphs.length)]
+          ).join('');
         }
 
         async function updateCameraVolume() {
@@ -1711,6 +1736,7 @@
 
         updateCameraClock();
         window.setInterval(updateCameraClock, 1000);
+        window.setInterval(updateCameraLocation, 90);
         cameraRain.volume = 0;
         cameraRain.muted = true;
         cameraVolume.addEventListener('input', updateCameraVolume);
