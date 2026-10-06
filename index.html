@@ -93,8 +93,8 @@
            ========================================= */
         .hero-grid {
           --hero-gap: 24px;
-          /* правый отступ камеры: 11vh + 20% её ширины (78vh) */
-          --hero-edge: 26.6vh;
+          /* боковой отступ камеры справа и заголовка/окна слева */
+          --hero-edge: 16vh;
           display: grid;
           width: 100%;
           height: 100vh;
@@ -116,12 +116,66 @@
           font: 400 clamp(24px, 3vw, 48px)/1.1 "DotGothic16", sans-serif;
           letter-spacing: .04em;
           text-transform: uppercase;
+          position: relative;
+          isolation: isolate;
+          text-shadow: 2px 2px 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+        }
+
+        /* тёмные полупрозрачные глич-блоки под текстом заголовка */
+        .hero-title::before,
+        .hero-title::after {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          left: calc(var(--hero-edge) - 12px);
+          right: -12px;
+          top: -8px;
+          bottom: 0;
+          background-repeat: no-repeat;
+          pointer-events: none;
+        }
+        .hero-title::before {
+          background-image:
+            linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.62)),
+            linear-gradient(rgba(10,10,10,.5), rgba(10,10,10,.5)),
+            linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75));
+          background-size: 34% 38%, 22% 24%, 15% 52%;
+          animation: title-glitch-a 2.4s steps(1, end) infinite;
+        }
+        .hero-title::after {
+          background-image:
+            linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),
+            linear-gradient(rgba(20,20,20,.58), rgba(20,20,20,.58)),
+            linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7));
+          background-size: 46% 14%, 12% 40%, 28% 18%;
+          animation: title-glitch-b 1.7s steps(1, end) infinite;
+        }
+        @keyframes title-glitch-a {
+          0%   { background-position: 4% 8%, 70% 60%, 90% 20%; }
+          12%  { background-position: 30% 62%, 8% 12%, 55% 70%; }
+          27%  { background-position: 62% 18%, 44% 80%, 12% 40%; clip-path: inset(0 0 30% 0); }
+          41%  { background-position: 12% 84%, 80% 30%, 70% 6%; clip-path: none; }
+          58%  { background-position: 52% 40%, 20% 70%, 96% 58%; }
+          73%  { background-position: 86% 10%, 56% 22%, 28% 78%; clip-path: inset(18% 0 0 0); }
+          89%  { background-position: 22% 50%, 90% 74%, 40% 14%; clip-path: none; }
+        }
+        @keyframes title-glitch-b {
+          0%   { background-position: 20% 30%, 84% 8%, 6% 86%; }
+          18%  { background-position: 74% 76%, 30% 50%, 60% 10%; }
+          36%  { background-position: 2% 54%, 62% 90%, 88% 44%; opacity: .5; }
+          52%  { background-position: 48% 12%, 10% 26%, 34% 66%; opacity: 1; }
+          69%  { background-position: 92% 64%, 46% 4%, 14% 30%; }
+          84%  { background-position: 38% 92%, 76% 56%, 72% 84%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-title::before, .hero-title::after { animation: none; }
         }
 
         .hero-empty { grid-area: empty; position: relative; padding: 0 0 0 var(--hero-edge); min-width: 0; margin-top: -11vh; }
 
         .syswin {
-          width: min(460px, 100%, 52vh);
+          width: 100%;
+          box-sizing: border-box;
           padding: 2px;
           background: #c0c0c0;
           color: #000;
@@ -144,7 +198,7 @@
           -webkit-font-smoothing: none;
         }
         .syswin .sysbody, .syswin .sysbtn, .syswin .sysbar {
-          text-shadow: -1px 0 rgba(255,0,0,.55), 1px 0 rgba(0,0,255,.55), 0 1px 0 rgba(0,0,0,.25);
+          text-shadow: -1px 0 rgba(255,0,0,.18), 1px 0 rgba(0,0,255,.18);
         }
         .sysbar {
           background-image:
@@ -153,7 +207,7 @@
           background-size: 3px 3px, 100% 100%;
           letter-spacing: .02em;
         }
-        .sysbtn { background-image: repeating-conic-gradient(rgba(0,0,0,.14) 0 25%, transparent 0 50%); background-size: 2px 2px; }
+        .sysbtn { background-image: repeating-conic-gradient(rgba(0,0,0,.05) 0 25%, transparent 0 50%); background-size: 2px 2px; }
         .sysbar .sysbtn { font-family: "Courier New", monospace; }
         .syswin.extra { position: fixed; z-index: 9999; width: 240px; }
         .sysbar {
@@ -754,12 +808,12 @@
  
     <!-- Верхняя композиция: заголовок слева, квадратный визуальный блок справа -->
     <section class="hero-grid" aria-label="заставка архива">
-      <h1 class="hero-title">..// нишевый // .// медиа ....//.   // архив ....//..</h1>
+      <h1 class="hero-title">..// нишевый // .//.. медиа ..//.   //.. архив ..//..</h1>
       <div class="hero-empty">
         <div class="syswin" id="sysMain" role="dialog" aria-labelledby="sysMainTitle">
           <div class="sysbar"><span id="sysMainTitle">НАЧАЛО</span><button class="sysbtn" type="button" data-reply="неа" aria-label="закрыть">x</button></div>
-          <div class="sysbody">Перед тобой собрание того за что случайный Пользователь любит интернет. Продолжить исследовать медиа-архив?
-            <img class="sysimg" src="окно.png" alt="">
+          <div class="sysbody">Перед тобой собрание того за что Пользователь любит интернет. Видео, картинки, музыка и все что таит в себе Сеть. Продолжить исследовать медиа-архив?
+            <img class="sysimg" src="окно.jpg" alt="">
           </div>
           <div class="sysbtns">
             <button class="sysbtn" type="button" data-reply="прокрути вниз и кликай">да</button>
@@ -1818,6 +1872,20 @@
   (function () {
     var main = document.getElementById('sysMain');
     if (!main) return;
+    var title = document.querySelector('.hero-title');
+    function fit() {
+      var rg = document.createRange();
+      rg.selectNodeContents(title);
+      main.style.width = Math.ceil(rg.getBoundingClientRect().width) + 'px';
+      // вертикальный зазор заголовок-окно = горизонтальный зазор окно-камера
+      title.style.marginBottom = '';
+      var cam = document.querySelector('.hero-gif').getBoundingClientRect();
+      var win = main.getBoundingClientRect();
+      var cur = win.top - rg.getBoundingClientRect().bottom;
+      var base = parseFloat(getComputedStyle(title).marginBottom);
+      title.style.marginBottom = Math.max(0, base + (cam.left - win.right) - cur) + 'px';
+    }
+    if (title) { fit(); addEventListener('resize', fit); document.fonts && document.fonts.ready.then(fit); }
     main.addEventListener('click', function (e) {
       var b = e.target.closest('[data-reply]');
       if (!b) return;
