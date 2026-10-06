@@ -108,7 +108,7 @@
         .hero-title {
           grid-area: title;
           align-self: end;
-          margin: 0;
+          margin: 0 0 11vh;
           padding: 0 0 8px 40px;
           color: var(--color-text);
           font: 400 clamp(24px, 3vw, 48px)/1.1 "DotGothic16", sans-serif;
@@ -116,7 +116,67 @@
           text-transform: uppercase;
         }
 
-        .hero-empty { grid-area: empty; }
+        .hero-empty { grid-area: empty; position: relative; padding: 0 0 0 40px; min-width: 0; margin-top: -11vh; }
+
+        .syswin {
+          width: min(460px, 100%, 52vh);
+          padding: 2px;
+          background: #c0c0c0;
+          color: #000;
+          border: 1px solid;
+          border-color: #dfdfdf #000 #000 #dfdfdf;
+          box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
+          font: 13px/1.3 "MS Sans Serif", Tahoma, Arial, sans-serif;
+          text-transform: none;
+        }
+        /* деградация: дизеринг, фриндж текста, ступенчатый градиент (картинка не затрагивается) */
+        .syswin {
+          background-color: #c0c0c0;
+          background-image:
+            repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px),
+            repeating-conic-gradient(rgba(0,0,0,.12) 0 25%, transparent 0 50%),
+            repeating-conic-gradient(rgba(255,255,255,.12) 0 25%, transparent 0 50%);
+          background-size: 100% 3px, 2px 2px, 8px 8px;
+          image-rendering: pixelated;
+          text-rendering: optimizeSpeed;
+          -webkit-font-smoothing: none;
+        }
+        .syswin .sysbody, .syswin .sysbtn, .syswin .sysbar {
+          text-shadow: -1px 0 rgba(255,0,0,.55), 1px 0 rgba(0,0,255,.55), 0 1px 0 rgba(0,0,0,.25);
+        }
+        .sysbar {
+          background-image:
+            repeating-conic-gradient(rgba(255,255,255,.28) 0 25%, transparent 0 50%),
+            linear-gradient(90deg, #000080 0 20%, #101090 20% 35%, #2a2aa8 35% 50%, #3d6cc0 50% 65%, #6aa0d8 65% 80%, #1084d0 80%);
+          background-size: 3px 3px, 100% 100%;
+          letter-spacing: .02em;
+        }
+        .sysbtn { background-image: repeating-conic-gradient(rgba(0,0,0,.14) 0 25%, transparent 0 50%); background-size: 2px 2px; }
+        .sysbar .sysbtn { font-family: "Courier New", monospace; }
+        .syswin.extra { position: fixed; z-index: 9999; width: 240px; }
+        .sysbar {
+          display: flex; justify-content: space-between; align-items: center;
+          background: #000080; color: #fff; padding: 2px 2px 2px 4px;
+          font-weight: bold; font-size: 14px; user-select: none;
+        }
+        .sysbtn {
+          font: inherit; color: #000; background: #c0c0c0; cursor: pointer; border-radius: 0;
+          border: 1px solid; border-color: #fff #000 #000 #fff;
+          box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+          padding: 3px 14px;
+        }
+        .sysbtn:active { border-color: #000 #fff #fff #000; box-shadow: inset 1px 1px 0 #808080; padding: 4px 13px 2px 15px; }
+        .sysbtn:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+        .sysbar .sysbtn { width: 18px; height: 16px; padding: 0; font: bold 12px/12px Arial, sans-serif; }
+        .sysbody { padding: 10px 8px 6px; }
+        .sysbody.extra-text { padding: 14px 10px; }
+        .sysimg {
+          display: block; width: 100%; aspect-ratio: 2 / 1; margin: 8px 0 0; object-fit: cover;
+          border: 2px solid; border-color: #808080 #fff #fff #808080;
+          outline: 1px solid #000; outline-offset: -3px;
+        }
+        .sysbtns { display: flex; justify-content: flex-end; gap: 6px; padding: 6px 6px 6px; }
+        .sysbtns .sysbtn { min-width: 75px; border-color: #fff #000 #000 #fff; outline: 1px solid #000; outline-offset: -1px; }
 
         .hero-gif {
           grid-area: gif;
@@ -692,8 +752,19 @@
  
     <!-- Верхняя композиция: заголовок слева, квадратный визуальный блок справа -->
     <section class="hero-grid" aria-label="заставка архива">
-      <h1 class="hero-title">канал 04 / медиа / архив</h1>
-      <div class="hero-empty" aria-hidden="true"></div>
+      <h1 class="hero-title">..// нишевый // .// медиа ....//.   // архив ....//..</h1>
+      <div class="hero-empty">
+        <div class="syswin" id="sysMain" role="dialog" aria-labelledby="sysMainTitle">
+          <div class="sysbar"><span id="sysMainTitle">НАЧАЛО</span><button class="sysbtn" type="button" data-reply="неа" aria-label="закрыть">x</button></div>
+          <div class="sysbody">Перед тобой собрание того за что случайный Пользователь любит интернет. Продолжить исследовать медиа-архив?
+            <img class="sysimg" src="окно.png" alt="">
+          </div>
+          <div class="sysbtns">
+            <button class="sysbtn" type="button" data-reply="прокрути вниз и кликай">да</button>
+            <button class="sysbtn" type="button" data-reply="а почему">нет</button>
+          </div>
+        </div>
+      </div>
       <figure class="hero-gif">
         <video class="camera-feed" autoplay muted loop playsinline preload="metadata" aria-label="видеопоток камеры наблюдения">
           <source id="cameraVideoSource" src="камера.webm" type="video/webm">
@@ -1741,5 +1812,27 @@
         cameraRain.muted = true;
         cameraVolume.addEventListener('input', updateCameraVolume);
       </script>
+<script>
+  (function () {
+    var main = document.getElementById('sysMain');
+    if (!main) return;
+    main.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-reply]');
+      if (!b) return;
+      var r = main.getBoundingClientRect();
+      var w = document.createElement('div');
+      w.className = 'syswin extra';
+      w.innerHTML = '<div class="sysbar"><span>ОТВЕТ</span><button class="sysbtn" type="button" aria-label="закрыть">x</button></div><div class="sysbody extra-text"></div>';
+      w.querySelector('.sysbody').textContent = b.dataset.reply;
+      w.querySelector('.sysbtn').onclick = function () { w.remove(); };
+      var x = r.left + (Math.random() * 2 - 0.5) * r.width * 0.8;
+      var y = r.top + (Math.random() * 2 - 0.5) * r.height * 1.2;
+      w.style.left = Math.max(0, Math.min(x, innerWidth - 250)) + 'px';
+      w.style.top = Math.max(0, Math.min(y, innerHeight - 120)) + 'px';
+      document.body.appendChild(w);
+      console.log('// MSG SPAWNED: ' + b.dataset.reply);
+    });
+  })();
+</script>
 </body>
 </html>
